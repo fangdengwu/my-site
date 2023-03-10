@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
+import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
@@ -48,7 +49,7 @@ public class QiniuCloudService {
     public String upload(MultipartFile file, String fileName) {
 
         //构造一个带指定Zone对象的配置类
-        Configuration cfg = new Configuration(Zone.zone0());
+        Configuration cfg = new Configuration(Zone.zone2());
         //...其他参数参考类注释
         UploadManager uploadManager = new UploadManager(cfg);
         //默认不指定key的情况下，以文件内容的hash值作为文件名
@@ -72,6 +73,23 @@ public class QiniuCloudService {
             throw BusinessException.withErrorCode(ErrorConstant.Att.UPLOAD_FILE_FAIL).withErrorMessageArguments(e.getMessage());
         }
         
+    }
+
+    public void delete(String fileName) {
+        //构造一个带指定 Region 对象的配置类
+        Configuration cfg = new Configuration(Zone.zone2());
+        //...其他参数参考类注释
+        Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+
+        BucketManager bucketManager = new BucketManager(auth, cfg);
+        try {
+            bucketManager.delete(BUCKET, fileName);
+        } catch (QiniuException ex) {
+            //如果遇到异常，说明删除失败
+            System.err.println(ex.code());
+            System.err.println(ex.response.toString());
+            throw BusinessException.withErrorCode(ErrorConstant.Att.DELETE_ATT_FAIL).withErrorMessageArguments(ex.getMessage());
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8089
+  port: 80
 
 
 spring:
@@ -14,7 +14,7 @@ spring:
           #基本属性
           url: jdbc:mysql://127.0.0.1:3306/lu_tale?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
           username: root
-          password: mac123
+          password: 123456
           #配置初始化大小/最小/最大
           initial-size: 1
           min-idle: 1
@@ -69,8 +69,8 @@ swagger:
   show: true
 
 qiniu:
-  accesskey: ""
-  serectkey: ""
-  bucket: ""
+  accesskey: "2Zd4qw5nzsBsvD0FTZEE-O0gU_n8P-SzxHHWJeDE"
+  serectkey: "ox6QrT4zCqOIXdoFWe9MZ_QtqR0GvFNuVF0SPVX3"
+  bucket: "testforsite"
   cdn:
-    url: ""
+    url: "http://rralfcb2s.hn-bkt.clouddn.com/"

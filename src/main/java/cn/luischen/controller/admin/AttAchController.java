@@ -156,8 +156,10 @@ public class AttAchController {
     ){
         try {
             AttAchDto attAch = attAchService.getAttAchById(id);
-            if (null == attAch)
+            if (null == attAch) {
                 throw BusinessException.withErrorCode(ErrorConstant.Att.DELETE_ATT_FAIL +  ": 文件不存在");
+            }
+            qiniuCloudService.delete(attAch.getFname());
             attAchService.deleteAttAch(id);
             return APIResponse.success();
         } catch (Exception e) {
