@@ -16,12 +16,15 @@
 <main role="main-home-wrapper" class="container">
   <div class="row">
     <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-      <article role="pge-title-content">
-        <header>
-          <h2><span>Luis</span> A Java Developer.</h2>
-        </header>
-        <p>maker of things for the web app, always focused on elegant simplicity, relentlessly learning by making mistakes.</p>
-      </article>
+      <h3 class="text-center" style="font: italic 2em Georgia, serif;">English Corner</h3>
+      <blockquote>
+        <p>
+          We become <span style="color: red;">defensive</span> when <span style="color: red;">criticised</span>,
+          and apply <span style="color: red;">negative</span> <span style="color: red;">stereotypes</span> to
+          others to <span style="color: red;">boost</span> our own <span style="color: red;">esteem</span>.
+        </p>
+        <footer>一旦受到批评，我们就会为自己辩护，并将他人定格为消极的老套形象，以此增强自己的自尊心。</footer>
+      </blockquote>
     </section>
     <th:block th:each="archive,archiveStat : ${archives.list}">
       <th:block th:if="${archiveStat.index == 0}">
