@@ -29,8 +29,6 @@ import java.util.List;
 public class LinksController extends BaseController {
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LinksController.class);
-
     @Autowired
     private MetaService metaService;
 

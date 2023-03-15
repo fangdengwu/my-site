@@ -1,6 +1,7 @@
 package cn.luischen.aspect;
 
 import cn.luischen.service.log.LogService;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,12 +24,12 @@ import java.util.Arrays;
  */
 @Aspect
 @Component
+@Slf4j
 public class WebLogAspect {
 
     @Autowired
     private LogService logService;
 
-    private static Logger LOGGER = LoggerFactory.getLogger(WebLogAspect.class);
 
     ThreadLocal<Long> startTime = new ThreadLocal<>();
 
@@ -46,18 +47,18 @@ public class WebLogAspect {
         HttpServletRequest request = attributes.getRequest();
         HttpSession session = request.getSession();
         // 记录下请求内容
-        LOGGER.info("URL : " + request.getRequestURL().toString());
-        LOGGER.info("HTTP_METHOD : " + request.getMethod());
-        LOGGER.info("IP : " + request.getRemoteAddr());
-        LOGGER.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        LOGGER.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        log.info("URL : " + request.getRequestURL().toString());
+        log.info("HTTP_METHOD : " + request.getMethod());
+        log.info("IP : " + request.getRemoteAddr());
+        log.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+        log.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
     }
 
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) throws Throwable {
         // 处理完请求，返回内容
-        LOGGER.info("RESPONSE : " + ret);
-        LOGGER.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
+        log.info("RESPONSE : " + ret);
+        log.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
         startTime.remove();//用完之后记得清除，不然可能导致内存泄露;
     }
 

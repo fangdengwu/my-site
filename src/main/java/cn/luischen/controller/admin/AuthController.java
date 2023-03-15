@@ -13,6 +13,7 @@ import cn.luischen.utils.TaleUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.log4j.LogManager;
@@ -34,9 +35,8 @@ import java.io.IOException;
 @Api("登录相关接口")
 @Controller
 @RequestMapping(value = "/admin")
+@Slf4j
 public class AuthController extends BaseController{
-
-    private static final Logger LOGGER = LogManager.getLogger(AuthController.class);
 
     @Autowired
     private UserService userService;
@@ -77,7 +77,7 @@ public class AuthController extends BaseController{
             }
             logService.addLog(LogActions.LOGIN.getAction(), null, request.getRemoteAddr(), userInfo.getUid());
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             error_count = null == error_count ? 1 : error_count + 1;
             if (error_count > 3) {
                 return APIResponse.fail("您输入密码已经错误超过3次，请10分钟后尝试");
@@ -87,7 +87,7 @@ public class AuthController extends BaseController{
             if (e instanceof BusinessException) {
                 msg = e.getMessage();
             } else {
-                LOGGER.error(msg, e);
+                log.error(msg, e);
             }
             return APIResponse.fail(msg);
         }
@@ -114,7 +114,7 @@ public class AuthController extends BaseController{
             response.sendRedirect("/admin/login");
         } catch (IOException e) {
             e.printStackTrace();
-            LOGGER.error("注销失败", e);
+            log.error("注销失败", e);
         }
     }
 

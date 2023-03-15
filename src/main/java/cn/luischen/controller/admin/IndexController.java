@@ -18,6 +18,7 @@ import cn.luischen.utils.TaleUtils;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +36,8 @@ import java.util.List;
 @Api("后台首页")
 @Controller("adminIndexController")
 @RequestMapping(value = "/admin")
+@Slf4j
 public class IndexController extends BaseController{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     @Autowired
     private SiteService siteService;
@@ -53,7 +53,7 @@ public class IndexController extends BaseController{
     @ApiOperation("进入首页")
     @GetMapping(value = {"","/index"})
     public String index(HttpServletRequest request){
-        LOGGER.info("Enter admin index method");
+        log.info("Enter admin index method");
         List<CommentDomain> comments = siteService.getComments(5);
         List<ContentDomain> contents = siteService.getNewArticles(5);
         StatisticsDto statistics = siteService.getStatistics();
@@ -64,7 +64,7 @@ public class IndexController extends BaseController{
         request.setAttribute("articles", contents);
         request.setAttribute("statistics", statistics);
         request.setAttribute("logs", list);
-        LOGGER.info("Exit admin index method");
+        log.info("Exit admin index method");
         return "admin/index";
     }
 
@@ -137,7 +137,7 @@ public class IndexController extends BaseController{
             if (e instanceof BusinessException) {
                 msg = e.getMessage();
             } else {
-                LOGGER.error(msg, e);
+                log.error(msg, e);
             }
             return APIResponse.fail(msg);
         }

@@ -34,8 +34,9 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void deleteLogById(Integer id) {
-        if (null == id)
+        if (null == id) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
         logDao.deleteLogById(id);
     }
 

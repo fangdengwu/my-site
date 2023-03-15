@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 @Api("评论相关接口")
 @Controller
 @RequestMapping("/admin/comments")
+@Slf4j
 public class CommentController extends BaseController{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
-
 
     @Autowired
     private CommentService commentService;
@@ -70,7 +69,7 @@ public class CommentController extends BaseController{
             commentService.deleteComment(coid);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             return APIResponse.fail(e.getMessage());
         }
         return APIResponse.success();
@@ -96,7 +95,7 @@ public class CommentController extends BaseController{
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error(e.getMessage());
+            log.error(e.getMessage());
             return APIResponse.fail(e.getMessage());
         }
         return APIResponse.success();

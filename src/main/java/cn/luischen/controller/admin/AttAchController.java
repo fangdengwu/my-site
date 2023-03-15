@@ -38,8 +38,6 @@ import java.io.IOException;
 @RequestMapping("admin/attach")
 public class AttAchController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AttAchController.class);
-
     public static final String CLASSPATH = TaleUtils.getUplodFilePath();
 
 

@@ -36,7 +36,6 @@ import java.util.List;
 @Transactional(rollbackFor = BusinessException.class)
 public class ArticleController extends BaseController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
 
     @Autowired
     private ContentService contentService;
