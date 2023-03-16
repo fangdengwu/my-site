@@ -1,5 +1,6 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,13 +10,14 @@ import java.io.Serializable;
  * Created by winterchen on 2018/4/29.
  */
 @Data
-public class LogDomain implements Serializable {
+public class Log implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 日志主键
      */
+    @TableId(value = "id")
     private Integer id;
 
     /**

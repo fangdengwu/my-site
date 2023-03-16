@@ -1,6 +1,6 @@
 package cn.luischen.service.option;
 
-import cn.luischen.model.OptionsDomain;
+import cn.luischen.model.Option;
 
 import java.util.List;
 import java.util.Map;
@@ -35,11 +35,11 @@ public interface OptionService {
      * @param name
      * @return
      */
-    OptionsDomain getOptionByName(String name);
+    Option getOptionByName(String name);
 
     /**
      * 获取全部网站配置
      * @return
      */
-    List<OptionsDomain> getOptions();
+    List<Option> getOptions();
 }

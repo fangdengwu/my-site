@@ -6,15 +6,15 @@ import cn.luischen.constant.WebConst;
 import cn.luischen.dto.ArchiveDto;
 import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.CommentDomain;
-import cn.luischen.model.ContentDomain;
+import cn.luischen.model.Comment;
+import cn.luischen.model.Content;
 import cn.luischen.service.comment.CommentService;
 import cn.luischen.service.content.ContentService;
 import cn.luischen.service.meta.MetaService;
 import cn.luischen.service.option.OptionService;
 import cn.luischen.service.site.SiteService;
 import cn.luischen.utils.*;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.vdurmont.emoji.EmojiParser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -91,10 +91,11 @@ public class HomeController extends BaseController{
         p = p < 0 || p > WebConst.MAX_PAGE ? 1 : p;
         ContentCond contentCond = new ContentCond();
         contentCond.setType(Types.ARTICLE.getType());
-        PageInfo<ContentDomain> articles = contentService.getArticlesByCond(contentCond, p, limit);
+        Page<Content> articles = contentService.getArticlesByCond(contentCond, p, limit);
         request.setAttribute("articles", articles);//文章列表
         request.setAttribute("type", "articles");
         request.setAttribute("active", "blog");
+        request.setAttribute("navigatepageNums", Tools.calcNavigatepageNums(articles));
 //        this.blogBaseData(request, contentCond);//获取公共分类标签等数据
         return "site/blog";
     }
@@ -107,14 +108,14 @@ public class HomeController extends BaseController{
                     Integer cid,
             HttpServletRequest request
     ){
-        ContentDomain article = contentService.getArticleById(cid);
+        Content article = contentService.getArticleById(cid);
         request.setAttribute("article", article);
         ContentCond contentCond = new ContentCond();
         contentCond.setType(Types.ARTICLE.getType());
 //        this.blogBaseData(request, contentCond);//获取公共分类标签等数据
         //更新文章的点击量
         this.updateArticleHit(article.getCid(),article.getHits());
-        List<CommentDomain> commentsPaginator = commentService.getCommentsByCId(cid);
+        List<Comment> commentsPaginator = commentService.getCommentsByCId(cid);
         request.setAttribute("comments", commentsPaginator);
         request.setAttribute("active","blog");
         return "site/blog-details";
@@ -133,7 +134,7 @@ public class HomeController extends BaseController{
         }
         hits = null == hits ? 1 : hits + 1;
         if (hits >= WebConst.HIT_EXCEED) {
-            ContentDomain temp = new ContentDomain();
+            Content temp = new Content();
             temp.setCid(cid);
             temp.setHits(chits + hits);
             contentService.updateContentByCid(temp);
@@ -233,7 +234,7 @@ public class HomeController extends BaseController{
         ContentCond contentCond = new ContentCond();
         contentCond.setType(Types.ARTICLE.getType());
         contentCond.setCategory(category);
-        PageInfo<ContentDomain> articles = contentService.getArticlesByCond(contentCond, page, limit);
+        Page<Content> articles = contentService.getArticlesByCond(contentCond, page, limit);
 //        this.blogBaseData(request,contentCond);//获取公共分类标签等数据
         request.setAttribute("articles_list", articles);
         request.setAttribute("type", "categories");
@@ -270,7 +271,7 @@ public class HomeController extends BaseController{
         ContentCond contentCond = new ContentCond();
         contentCond.setTag(tag);
         contentCond.setType(Types.ARTICLE.getType());
-        PageInfo<ContentDomain> articles = contentService.getArticlesByCond(contentCond, page, limit);
+        Page<Content> articles = contentService.getArticlesByCond(contentCond, page, limit);
 //        this.blogBaseData(request,contentCond);//获取公共分类标签等数据
         request.setAttribute("articles_list", articles);
         request.setAttribute("type", "tag");
@@ -303,7 +304,7 @@ public class HomeController extends BaseController{
                     int limit,
             HttpServletRequest request
     ){
-        PageInfo<ContentDomain> pageInfo = contentService.searchArticle(param, page, limit);
+        Page<Content> pageInfo = contentService.searchArticle(param, page, limit);
         ContentCond contentCond = new ContentCond();
         contentCond.setType(Types.ARTICLE.getType());
 //        this.blogBaseData(request,contentCond);//获取公共分类标签等数据
@@ -369,7 +370,7 @@ public class HomeController extends BaseController{
         author = EmojiParser.parseToAliases(author);
         text = EmojiParser.parseToAliases(text);
 
-        CommentDomain comments = new CommentDomain();
+        Comment comments = new Comment();
         comments.setAuthor(author);
         comments.setCid(cid);
         comments.setIp(request.getRemoteAddr());
@@ -443,8 +444,9 @@ public class HomeController extends BaseController{
         page = page < 0 || page > WebConst.MAX_PAGE ? 1 : page;
         ContentCond contentCond = new ContentCond();
         contentCond.setType(Types.PHOTO.getType());
-        PageInfo<ContentDomain> articles = contentService.getArticlesByCond(contentCond, page, limit);
+        Page<Content> articles = contentService.getArticlesByCond(contentCond, page, limit);
         request.setAttribute("archives", articles);
+        request.setAttribute("navigatepageNums", Tools.calcNavigatepageNums(articles));
         request.setAttribute("active", "work");
         return "site/index";
     }
@@ -457,7 +459,7 @@ public class HomeController extends BaseController{
                     Integer cid,
             HttpServletRequest request
     ){
-        ContentDomain article = contentService.getArticleById(cid);
+        Content article = contentService.getArticleById(cid);
         //更新文章的点击量
         this.updateArticleHit(article.getCid(),article.getHits());
         request.setAttribute("archive", article);

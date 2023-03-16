@@ -1,8 +1,8 @@
 package cn.luischen.utils;
 
 import cn.luischen.constant.WebConst;
-import cn.luischen.model.ContentDomain;
-import com.github.pagehelper.PageInfo;
+import cn.luischen.model.Content;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.vdurmont.emoji.EmojiParser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -269,8 +269,9 @@ public class Commons {
     }
 
     public static String random(Long seed, int max, String str){
-        if (seed == null)
+        if (seed == null) {
             return random(max, str);
+        }
         Random random = new Random(seed);
         return random.nextInt(max) + str;
     }
@@ -319,7 +320,7 @@ public class Commons {
      * @param contents
      * @return
      */
-    public static String permalink(ContentDomain contents) {
+    public static String permalink(Content contents) {
         return permalink(contents.getCid(), contents.getSlug());
     }
 
@@ -342,8 +343,8 @@ public class Commons {
      * @param paginator
      * @return
      */
-    public static boolean is_empty(PageInfo paginator) {
-        return paginator == null || (paginator.getList() == null) || (paginator.getList().size() == 0);
+    public static boolean is_empty(Page paginator) {
+        return paginator == null || (paginator.getRecords() == null) || (paginator.getRecords().size() == 0);
     }
 
     /**
@@ -484,8 +485,9 @@ public class Commons {
         result = result.replace("</img>","");
         result = result.replace("<p>","");
         result = result.replace("</p>","");
-        if (result.length() > 20)
+        if (result.length() > 20) {
             result = result.substring(0, 20);
+        }
         return result;
     }
 

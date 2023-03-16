@@ -1,8 +1,9 @@
 package cn.luischen.service.content;
 
 import cn.luischen.dto.cond.ContentCond;
-import cn.luischen.model.ContentDomain;
-import com.github.pagehelper.PageInfo;
+import cn.luischen.model.Content;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 文章服务层
@@ -15,7 +16,7 @@ public interface ContentService {
      * @param contentDomain
      * @return
      */
-    void addArticle(ContentDomain contentDomain);
+    void addArticle(Content contentDomain);
 
     /**
      * 根据编号删除文章
@@ -29,7 +30,7 @@ public interface ContentService {
      * @param contentDomain
      * @return
      */
-    void updateArticleById(ContentDomain contentDomain);
+    void updateArticleById(Content contentDomain);
 
     /**
      * 更新分类
@@ -44,21 +45,21 @@ public interface ContentService {
      * 添加文章点击量
      * @param content
      */
-    void updateContentByCid(ContentDomain content);
+    void updateContentByCid(Content content);
 
     /**
      * 根据编号获取文章
      * @param cid
      * @return
      */
-    ContentDomain getArticleById(Integer cid);
+    Content getArticleById(Integer cid);
 
     /**
      * 根据条件获取文章列表
      * @param contentCond
      * @return
      */
-    PageInfo<ContentDomain> getArticlesByCond(ContentCond contentCond, int pageNum, int pageSize);
+    Page<Content> getArticlesByCond(ContentCond contentCond, int pageNum, int pageSize);
 
     /**
      * 获取最近的文章（只包含id和title）
@@ -66,7 +67,7 @@ public interface ContentService {
      * @param pageSize
      * @return
      */
-    PageInfo<ContentDomain> getRecentlyArticle(int pageNum, int pageSize);
+    Page<Content> getRecentlyArticle(int pageNum, int pageSize);
 
     /**
      * 搜索文章
@@ -75,5 +76,5 @@ public interface ContentService {
      * @param pageSize
      * @return
      */
-    PageInfo<ContentDomain> searchArticle(String param, int pageNun, int pageSize);
+    Page<Content> searchArticle(String param, int pageNun, int pageSize);
 }

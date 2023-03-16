@@ -1,16 +1,18 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
  * Created by winterchen on 2018/4/29.
  */
 @Data
-public class CommentDomain {
+public class Comment {
 
     /**
      * comment表主键
      */
+    @TableId(value = "coid")
     private Integer coid;
 
     /**

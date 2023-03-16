@@ -2,8 +2,8 @@ package cn.luischen.interceptor;
 
 import cn.luischen.constant.Types;
 import cn.luischen.constant.WebConst;
-import cn.luischen.model.OptionsDomain;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.Option;
+import cn.luischen.model.User;
 import cn.luischen.service.option.OptionService;
 import cn.luischen.service.user.UserService;
 import cn.luischen.utils.*;
@@ -53,7 +53,7 @@ public class BaseInterceptor implements HandlerInterceptor {
 
 
         //请求拦截处理
-        UserDomain user = TaleUtils.getLoginUser(request);
+        User user = TaleUtils.getLoginUser(request);
         if (null == user) {
             Integer uid = TaleUtils.getCookieUid(request);
             if (null != uid) {
@@ -81,7 +81,7 @@ public class BaseInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-        OptionsDomain ov = optionService.getOptionByName("site_record");
+        Option ov = optionService.getOptionByName("site_record");
         httpServletRequest.setAttribute("commons", commons);//一些工具类和公共方法
         httpServletRequest.setAttribute("option", ov);
         httpServletRequest.setAttribute("adminCommons", adminCommons);
@@ -91,7 +91,7 @@ public class BaseInterceptor implements HandlerInterceptor {
 
     private void initSiteConfig(HttpServletRequest request) {
         if (WebConst.initConfig.isEmpty()){
-            List<OptionsDomain> options = optionService.getOptions();
+            List<Option> options = optionService.getOptions();
             Map<String, String> querys = new HashMap<>();
             options.forEach(option -> {
                 querys.put(option.getName(), option.getValue());

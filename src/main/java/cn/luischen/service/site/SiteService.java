@@ -4,9 +4,9 @@ import cn.luischen.dto.ArchiveDto;
 import cn.luischen.dto.MetaDto;
 import cn.luischen.dto.StatisticsDto;
 import cn.luischen.dto.cond.ContentCond;
-import cn.luischen.model.CommentDomain;
-import cn.luischen.model.ContentDomain;
-import com.github.pagehelper.PageInfo;
+import cn.luischen.model.Comment;
+import cn.luischen.model.Content;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
@@ -21,21 +21,21 @@ public interface SiteService {
      * @param limit
      * @return
      */
-    List<CommentDomain> getComments(int limit);
+    List<Comment> getComments(int limit);
 
     /**
      * 获取最新的文章
      * @param limit
      * @return
      */
-    List<ContentDomain> getNewArticles(int limit);
+    List<Content> getNewArticles(int limit);
 
     /**
      * 获取单条评论
      * @param coid
      * @return
      */
-    CommentDomain getComment(Integer coid);
+    Comment getComment(Integer coid);
 
     /**
      * 获取 后台统计数据

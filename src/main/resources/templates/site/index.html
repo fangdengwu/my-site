@@ -26,7 +26,7 @@
         <footer>一旦受到批评，我们就会为自己辩护，并将他人定格为消极的老套形象，以此增强自己的自尊心。</footer>
       </blockquote>
     </section>
-    <th:block th:each="archive,archiveStat : ${archives.list}">
+    <th:block th:each="archive,archiveStat : ${archives.records}">
       <th:block th:if="${archiveStat.index == 0}">
         <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
           <figure class="effect-oscar">
@@ -44,7 +44,7 @@
     <div class="clearfix"></div>
     <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
       <ul class="grid-lod effect-2" id="grid">
-        <th:block th:each="archive,archiveStat : ${archives.list}">
+        <th:block th:each="archive,archiveStat : ${archives.records}">
           <th:block th:if="${archiveStat.index != 0 && archiveStat.index % 2 == 1}">
             <li>
               <figure class="effect-oscar">
@@ -63,7 +63,7 @@
     <!-- right -->
     <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
       <ul class="grid-lod effect-2" id="grid">
-        <th:block th:each="archive,archiveStat : ${archives.list}">
+        <th:block th:each="archive,archiveStat : ${archives.records}">
           <th:block th:if="${archiveStat.index != 0 && archiveStat.index % 2 != 1}">
             <li>
               <figure class="effect-oscar">

@@ -1,7 +1,8 @@
 package cn.luischen.dao;
 
 import cn.luischen.dto.cond.CommentCond;
-import cn.luischen.model.CommentDomain;
+import cn.luischen.model.Comment;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,14 @@ import java.util.List;
  */
 @Mapper
 @Component
-public interface CommentDao {
+public interface CommentDao extends BaseMapper<Comment> {
 
     /**
      * 新增评论
      * @param commentDomain
      * @return
      */
-    int addComment(CommentDomain commentDomain);
+    int addComment(Comment commentDomain);
 
     /**
      * 删除评论
@@ -42,20 +43,20 @@ public interface CommentDao {
      * @param coid
      * @return
      */
-    CommentDomain getCommentById(@Param("coid") Integer coid);
+    Comment getCommentById(@Param("coid") Integer coid);
     /**
      * 根据文章编号获取评论列表
      * @param cid
      * @return
      */
-    List<CommentDomain> getCommentsByCId(@Param("cid") Integer cid);
+    List<Comment> getCommentsByCId(@Param("cid") Integer cid);
 
     /**
      * 根据条件获取评论列表
      * @param commentCond
      * @return
      */
-    List<CommentDomain> getCommentsByCond(CommentCond commentCond);
+    List<Comment> getCommentsByCond(CommentCond commentCond);
 
     /**
      * 获取文章数量

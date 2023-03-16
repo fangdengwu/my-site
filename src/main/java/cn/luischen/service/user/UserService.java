@@ -1,8 +1,7 @@
 package cn.luischen.service.user;
 
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.User;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
 /**
  * Created by winterchen on 2018/4/20.
@@ -16,7 +15,7 @@ public interface UserService {
      * @Date: 2018/4/20
      * @param user
      */
-    int updateUserInfo(UserDomain user);
+    int updateUserInfo(User user);
 
     /**
      * @Author: winterchen
@@ -24,7 +23,7 @@ public interface UserService {
      * @Date: 2018/4/20
      * @param uId 主键
      */
-    UserDomain getUserInfoById(Integer uId);
+    User getUserInfoById(Integer uId);
 
 
     /**
@@ -33,6 +32,6 @@ public interface UserService {
      * @param password 密码
      * @return
      */
-    UserDomain login(String username, String password);
+    User login(String username, String password);
 
 }

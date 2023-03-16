@@ -4,7 +4,7 @@ import cn.luischen.constant.LogActions;
 import cn.luischen.constant.WebConst;
 import cn.luischen.controller.BaseController;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.User;
 import cn.luischen.service.log.LogService;
 import cn.luischen.service.user.UserService;
 import cn.luischen.utils.APIResponse;
@@ -16,8 +16,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +68,7 @@ public class AuthController extends BaseController{
         String ip= IPKit.getIpAddrByRequest(request); // 获取ip并过滤登录时缓存的bug
         Integer error_count = cache.hget("login_error_count",ip);
         try {
-            UserDomain userInfo = userService.login(username, password);
+            User userInfo = userService.login(username, password);
             request.getSession().setAttribute(WebConst.LOGIN_SESSION_KEY, userInfo);
             if (StringUtils.isNotBlank(remeber_me)) {
                 TaleUtils.setCookie(response, userInfo.getUid());

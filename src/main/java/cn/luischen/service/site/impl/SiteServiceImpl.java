@@ -13,12 +13,11 @@ import cn.luischen.dto.StatisticsDto;
 import cn.luischen.dto.cond.CommentCond;
 import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.CommentDomain;
-import cn.luischen.model.ContentDomain;
+import cn.luischen.model.Comment;
+import cn.luischen.model.Content;
 import cn.luischen.service.site.SiteService;
 import cn.luischen.utils.DateKit;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,9 @@ import java.util.Map;
  * Created by winterchen on 2018/4/30.
  */
 @Service
+@Slf4j
 public class SiteServiceImpl implements SiteService{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SiteServiceImpl.class);
 
     @Autowired
     private CommentDao commentDao;
@@ -54,44 +53,44 @@ public class SiteServiceImpl implements SiteService{
 
     @Override
     @Cacheable(value = "siteCache", key = "'comments_' + #p0")
-    public List<CommentDomain> getComments(int limit) {
-        LOGGER.debug("Enter recentComments method:limit={}", limit);
+    public List<Comment> getComments(int limit) {
+        log.debug("Enter recentComments method:limit={}", limit);
         if (limit < 0 || limit > 10){
             limit = 10;
         }
-        PageHelper.startPage(1, limit);
-        List<CommentDomain> rs = commentDao.getCommentsByCond(new CommentCond());
-        LOGGER.debug("Exit recentComments method");
+        List<Comment> rs = commentDao.getCommentsByCond(new CommentCond());
+        log.debug("Exit recentComments method");
         return rs;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'newArticles_' + #p0")
-    public List<ContentDomain> getNewArticles(int limit) {
-        LOGGER.debug("Enter recentArticles method:limit={}", limit);
-        if (limit < 0 || limit > 10)
+    public List<Content> getNewArticles(int limit) {
+        log.debug("Enter recentArticles method:limit={}", limit);
+        if (limit < 0 || limit > 10) {
             limit = 10;
-        PageHelper.startPage(1, limit);
-        List<ContentDomain> rs = contentDao.getArticlesByCond(new ContentCond());
-        LOGGER.debug("Exit recentArticles method");
+        }
+        List<Content> rs = contentDao.getArticlesByCond(new ContentCond());
+        log.debug("Exit recentArticles method");
         return rs;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'comment_' + #p0")
-    public CommentDomain getComment(Integer coid) {
-        LOGGER.debug("Enter recentComment method");
-        if (null == coid)
+    public Comment getComment(Integer coid) {
+        log.debug("Enter recentComment method");
+        if (null == coid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        CommentDomain comment = commentDao.getCommentById(coid);
-        LOGGER.debug("Exit recentComment method");
+        }
+        Comment comment = commentDao.getCommentById(coid);
+        log.debug("Exit recentComment method");
         return comment;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'statistics_'")
     public StatisticsDto getStatistics() {
-        LOGGER.debug("Enter recentStatistics method");
+        log.debug("Enter recentStatistics method");
         //文章总数
         Long artices = contentDao.getArticleCount();
 
@@ -107,26 +106,26 @@ public class SiteServiceImpl implements SiteService{
         rs.setComments(comments);
         rs.setLinks(links);
 
-        LOGGER.debug("Exit recentStatistics method");
+        log.debug("Exit recentStatistics method");
         return rs;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'archivesSimple_' + #p0")
     public List<ArchiveDto> getArchivesSimple(ContentCond contentCond) {
-        LOGGER.debug("Enter getArchives method");
+        log.debug("Enter getArchives method");
         List<ArchiveDto> archives = contentDao.getArchive(contentCond);
-        LOGGER.debug("Exit getArchives method");
+        log.debug("Exit getArchives method");
         return archives;
     }
 
     @Override
     @Cacheable(value = "siteCache", key = "'archives_' + #p0")
     public List<ArchiveDto> getArchives(ContentCond contentCond) {
-        LOGGER.debug("Enter getArchives method");
+        log.debug("Enter getArchives method");
         List<ArchiveDto> archives = contentDao.getArchive(contentCond);
         parseArchives(archives, contentCond);
-        LOGGER.debug("Exit getArchives method");
+        log.debug("Exit getArchives method");
         return archives;
     }
 
@@ -143,8 +142,8 @@ public class SiteServiceImpl implements SiteService{
                 cond.setStartTime(start);
                 cond.setEndTime(end);
                 cond.setType(contentCond.getType());
-                List<ContentDomain> contentss = contentDao.getArticlesByCond(cond);
-                archive.setArticles(contentss);
+                List<Content> contents = contentDao.getArticlesByCond(cond);
+                archive.setArticles(contents);
             });
         }
     }
@@ -152,7 +151,7 @@ public class SiteServiceImpl implements SiteService{
     @Override
     @Cacheable(value = "siteCache", key = "'metas_' + #p0")
     public List<MetaDto> getMetas(String type, String orderBy, int limit) {
-        LOGGER.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
+        log.debug("Enter metas method:type={},order={},limit={}", type, orderBy, limit);
         List<MetaDto> retList=null;
         if (StringUtils.isNotBlank(type)) {
             if(StringUtils.isBlank(orderBy)){
@@ -167,7 +166,7 @@ public class SiteServiceImpl implements SiteService{
             paraMap.put("limit", limit);
             retList= metaDao.selectFromSql(paraMap);
         }
-        LOGGER.debug("Exit metas method");
+        log.debug("Exit metas method");
         return retList;
     }
 }

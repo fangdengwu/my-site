@@ -2,10 +2,10 @@ package cn.luischen.dao;
 
 import cn.luischen.dto.ArchiveDto;
 import cn.luischen.dto.cond.ContentCond;
-import cn.luischen.model.ContentDomain;
+import cn.luischen.model.Content;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -14,15 +14,14 @@ import java.util.List;
  * Created by winterchen on 2018/4/29.
  */
 @Mapper
-@Component
-public interface ContentDao {
+public interface ContentDao extends BaseMapper<Content> {
 
     /**
      * 添加文章
      * @param contentDomain
      * @return
      */
-    int addArticle(ContentDomain contentDomain);
+    int addArticle(Content contentDomain);
 
     /**
      * 根据编号删除文章
@@ -36,7 +35,7 @@ public interface ContentDao {
      * @param contentDomain
      * @return
      */
-    int updateArticleById(ContentDomain contentDomain);
+    int updateArticleById(Content contentDomain);
 
     /**
      * 更新文章的评论数
@@ -53,14 +52,14 @@ public interface ContentDao {
      * @param cid
      * @return
      */
-    ContentDomain getArticleById(@Param("cid") Integer cid);
+    Content getArticleById(@Param("cid") Integer cid);
 
     /**
      * 根据条件获取文章列表
      * @param contentCond
      * @return
      */
-    List<ContentDomain> getArticlesByCond(ContentCond contentCond);
+    List<Content> getArticlesByCond(ContentCond contentCond);
 
     /**
      * 获取文章总数量
@@ -79,13 +78,13 @@ public interface ContentDao {
      * 获取最近的文章（只包含id和title）
      * @return
      */
-    List<ContentDomain> getRecentlyArticle();
+    List<Content> getRecentlyArticle();
 
     /**
      * 搜索文章-根据标题 或 内容匹配
      * @param param
      * @return
      */
-    List<ContentDomain> searchArticle(@Param("param") String param);
+    List<Content> searchArticle(@Param("param") String param);
 
 }

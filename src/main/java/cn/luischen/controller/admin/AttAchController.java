@@ -6,21 +6,18 @@ import cn.luischen.constant.Types;
 import cn.luischen.constant.WebConst;
 import cn.luischen.dto.AttAchDto;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.AttAchDomain;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.AttAch;
+import cn.luischen.model.User;
 import cn.luischen.service.attach.AttAchService;
 import cn.luischen.utils.APIResponse;
 import cn.luischen.utils.Commons;
 import cn.luischen.utils.TaleUtils;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,7 +56,7 @@ public class AttAchController {
             int limit,
             HttpServletRequest request
     ){
-        PageInfo<AttAchDto> atts = attAchService.getAtts(page, limit);
+        Page<AttAchDto> atts = attAchService.getAtts(page, limit);
         request.setAttribute("attachs", atts);
         request.setAttribute(Types.ATTACH_URL.getType(), Commons.site_option(Types.ATTACH_URL.getType(), Commons.site_url()));
         request.setAttribute("max_file_size", WebConst.MAX_FILE_SIZE / 1024);
@@ -84,9 +81,9 @@ public class AttAchController {
             String fileName = TaleUtils.getFileKey(file.getOriginalFilename()).replaceFirst("/","");
 
             qiniuCloudService.upload(file, fileName);
-            AttAchDomain attAch = new AttAchDomain();
+            AttAch attAch = new AttAch();
             HttpSession session = request.getSession();
-            UserDomain sessionUser = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+            User sessionUser = (User) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
             attAch.setAuthorId(sessionUser.getUid());
             attAch.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
             attAch.setFname(fileName);
@@ -125,9 +122,9 @@ public class AttAchController {
                 String fileName = TaleUtils.getFileKey(file.getOriginalFilename()).replaceFirst("/","");
 
                 qiniuCloudService.upload(file, fileName);
-                AttAchDomain attAch = new AttAchDomain();
+                AttAch attAch = new AttAch();
                 HttpSession session = request.getSession();
-                UserDomain sessionUser = (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+                User sessionUser = (User) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
                 attAch.setAuthorId(sessionUser.getUid());
                 attAch.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
                 attAch.setFname(fileName);

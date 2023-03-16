@@ -1,9 +1,8 @@
 package cn.luischen.service.comment;
 
 import cn.luischen.dto.cond.CommentCond;
-import cn.luischen.model.CommentDomain;
-import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
+import cn.luischen.model.Comment;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public interface CommentService {
      * @param commentDomain 评论的实体
      * @return
      */
-    void addComment(CommentDomain commentDomain);
+    void addComment(Comment commentDomain);
 
     /**
      * 删除评论
@@ -41,14 +40,14 @@ public interface CommentService {
      * @param coid
      * @return
      */
-    CommentDomain getCommentById(Integer coid);
+    Comment getCommentById(Integer coid);
 
     /**
      * 根据文章编号获取评论列表--只显示通过审核的评论-正常状态的
      * @param cid 文章主键编号
      * @return
      */
-    List<CommentDomain> getCommentsByCId(Integer cid);
+    List<Comment> getCommentsByCId(Integer cid);
 
     /**
      * 根据条件获取评论列表
@@ -57,5 +56,5 @@ public interface CommentService {
      * @param pageSize 分页参数 每页条数
      * @return
      */
-    PageInfo<CommentDomain> getCommentsByCond(CommentCond commentCond, int pageNum, int pageSize);
+    Page<Comment> getCommentsByCond(CommentCond commentCond, int pageNum, int pageSize);
 }

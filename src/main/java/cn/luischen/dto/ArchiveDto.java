@@ -1,6 +1,6 @@
 package cn.luischen.dto;
 
-import cn.luischen.model.ContentDomain;
+import cn.luischen.model.Content;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class ArchiveDto {
 
     private String date;
     private String count;
-    private List<ContentDomain> articles;
+    private List<Content> articles;
 
     public String getDate() {
         return date;
@@ -30,11 +30,11 @@ public class ArchiveDto {
         this.count = count;
     }
 
-    public List<ContentDomain> getArticles() {
+    public List<Content> getArticles() {
         return articles;
     }
 
-    public void setArticles(List<ContentDomain> articles) {
+    public void setArticles(List<Content> articles) {
         this.articles = articles;
     }
 }

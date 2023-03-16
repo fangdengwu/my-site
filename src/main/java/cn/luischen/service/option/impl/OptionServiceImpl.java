@@ -3,7 +3,7 @@ package cn.luischen.service.option.impl;
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.dao.OptionDao;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.OptionsDomain;
+import cn.luischen.model.Option;
 import cn.luischen.service.option.OptionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class OptionServiceImpl implements OptionService {
     public void updateOptionByName(String name, String value) {
         if(StringUtils.isBlank(name))
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        OptionsDomain option = new OptionsDomain();
+        Option option = new Option();
         option.setName(name);
         option.setValue(value);
         optionDao.updateOptionByName(option);
@@ -58,7 +58,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Cacheable(value = "optionCache", key = "'optionByName_' + #p0")
-    public OptionsDomain getOptionByName(String name) {
+    public Option getOptionByName(String name) {
         if(StringUtils.isBlank(name))
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         return optionDao.getOptionByName(name);
@@ -66,7 +66,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     @Cacheable(value = "optionsCache", key = "'options_'")
-    public List<OptionsDomain> getOptions() {
+    public List<Option> getOptions() {
         return optionDao.getOptions();
     }
 }

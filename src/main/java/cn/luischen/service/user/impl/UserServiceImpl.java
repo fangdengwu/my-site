@@ -2,9 +2,8 @@ package cn.luischen.service.user.impl;
 
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.dao.UserDao;
-import cn.luischen.dto.cond.UserCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.User;
 import cn.luischen.service.user.UserService;
 import cn.luischen.utils.TaleUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,24 +23,24 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public int updateUserInfo(UserDomain user) {
+    public int updateUserInfo(User user) {
         if (null == user.getUid())
             throw BusinessException.withErrorCode("用户编号不可能为空");
         return userDao.updateUserInfo(user);
     }
 
     @Override
-    public UserDomain getUserInfoById(Integer uId) {
+    public User getUserInfoById(Integer uId) {
         return userDao.getUserInfoById(uId);
     }
 
     @Override
-    public UserDomain login(String username, String password) {
+    public User login(String username, String password) {
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password))
             throw BusinessException.withErrorCode(ErrorConstant.Auth.USERNAME_PASSWORD_IS_EMPTY);
 
         String pwd = TaleUtils.MD5encode(username + password);
-        UserDomain user = userDao.getUserInfoByCond(username, pwd);
+        User user = userDao.getUserInfoByCond(username, pwd);
         if (null == user)
             throw BusinessException.withErrorCode(ErrorConstant.Auth.USERNAME_PASSWORD_ERROR);
 

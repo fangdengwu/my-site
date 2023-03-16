@@ -1,5 +1,6 @@
 package cn.luischen.utils;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -10,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -86,4 +88,44 @@ public class Tools {
 
         return false;
     }
+
+    public static int[] calcNavigatepageNums(Page pageInfo) {
+
+        int navigatepageNums[];
+        long totalPages = pageInfo.getPages();
+        long num = pageInfo.getCurrent();
+
+        //当总页数小于或等于导航页码数时
+        if (totalPages <= 10) {
+            navigatepageNums = new int[(int) totalPages];
+            for (int i = 0; i < totalPages; i++) {
+                navigatepageNums[i] = i + 1;
+            }
+        } else { //当总页数大于导航页码数时
+            navigatepageNums = new int[10];
+            long startNum = num - 10 / 2;
+            long endNum = num + 10 / 2;
+
+            if (startNum < 1) {
+                startNum = 1;
+                //(最前navigatePages页
+                for (int i = 0; i < 10; i++) {
+                    navigatepageNums[i] = (int) startNum++;
+                }
+            } else if (endNum > totalPages) {
+                endNum = totalPages;
+                //最后navigatePages页
+                for (int i = 10 - 1; i >= 0; i--) {
+                    navigatepageNums[i] = (int) endNum--;
+                }
+            } else {
+                //所有中间页
+                for (int i = 0; i < 10; i++) {
+                    navigatepageNums[i] = (int) startNum++;
+                }
+            }
+        }
+        return navigatepageNums;
+    }
+
 }

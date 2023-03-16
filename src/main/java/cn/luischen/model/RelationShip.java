@@ -1,5 +1,6 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -7,7 +8,7 @@ import lombok.Data;
  * Created by winterchen on 2018/4/30.
  */
 @Data
-public class RelationShipDomain {
+public class RelationShip {
 
     /**
      * 文章主键编号

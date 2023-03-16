@@ -2,7 +2,7 @@ package cn.luischen.service.meta;
 
 import cn.luischen.dto.MetaDto;
 import cn.luischen.dto.cond.MetaCond;
-import cn.luischen.model.MetaDomain;
+import cn.luischen.model.Meta;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface MetaService {
      * @param meta
      * @return
      */
-    void addMeta(MetaDomain meta);
+    void addMeta(Meta meta);
 
     /**
      * 添加
@@ -58,21 +58,21 @@ public interface MetaService {
      * @param meta
      * @return
      */
-    void updateMeta(MetaDomain meta);
+    void updateMeta(Meta meta);
 
     /**
      * 根据编号获取项目
      * @param mid
      * @return
      */
-    MetaDomain getMetaById(Integer mid);
+    Meta getMetaById(Integer mid);
 
     /**
      * 获取所有的项目
      * @param metaCond 查询条件
      * @return
      */
-    List<MetaDomain> getMetas(MetaCond metaCond);
+    List<Meta> getMetas(MetaCond metaCond);
 
     /**
      * 根据类型查询项目列表，带项目下面的文章数

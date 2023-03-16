@@ -1,7 +1,7 @@
 package cn.luischen.service.log;
 
-import cn.luischen.model.LogDomain;
-import com.github.pagehelper.PageInfo;
+import cn.luischen.model.Log;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * 用户请求日志
@@ -29,5 +29,5 @@ public interface LogService {
      * 获取日志
      * @return
      */
-    PageInfo<LogDomain> getLogs(int pageNum, int pageSize);
+    Page<Log> getLogs(int pageNum, int pageSize);
 }

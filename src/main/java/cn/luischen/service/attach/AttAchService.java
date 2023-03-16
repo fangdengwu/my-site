@@ -1,8 +1,8 @@
 package cn.luischen.service.attach;
 
 import cn.luischen.dto.AttAchDto;
-import cn.luischen.model.AttAchDomain;
-import com.github.pagehelper.PageInfo;
+import cn.luischen.model.AttAch;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -17,14 +17,14 @@ public interface AttAchService {
      * @param attAchDomain
      * @return
      */
-    void addAttAch(AttAchDomain attAchDomain);
+    void addAttAch(AttAch attAchDomain);
 
     /**
      * 批量添加附件信息
      * @param list
      * @return
      */
-    void batchAddAttAch(List<AttAchDomain> list);
+    void batchAddAttAch(List<AttAch> list);
 
     /**
      * 根据主键编号删除附件信息
@@ -38,7 +38,7 @@ public interface AttAchService {
      * @param attAchDomain
      * @return
      */
-    void updateAttAch(AttAchDomain attAchDomain);
+    void updateAttAch(AttAch attAchDomain);
 
     /**
      * 根据主键获取附件信息
@@ -51,5 +51,5 @@ public interface AttAchService {
      * 获取所有的附件信息
      * @return
      */
-    PageInfo<AttAchDto> getAtts(int pageNum, int pageSize);
+    Page<AttAchDto> getAtts(int pageNum, int pageSize);
 }

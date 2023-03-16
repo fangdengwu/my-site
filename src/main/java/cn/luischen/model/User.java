@@ -1,14 +1,16 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
  * Created by winterchen on 2018/4/20.
  */
 @Data
-public class UserDomain {
+public class User {
 
     /** 主键编号 */
+    @TableId(value = "uid")
     private Integer uid;
     /** 用户名 */
     private String username;

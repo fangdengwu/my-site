@@ -4,17 +4,15 @@ import cn.luischen.constant.ErrorConstant;
 import cn.luischen.controller.BaseController;
 import cn.luischen.dto.cond.CommentCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.CommentDomain;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.Comment;
+import cn.luischen.model.User;
 import cn.luischen.service.comment.CommentService;
 import cn.luischen.utils.APIResponse;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +43,9 @@ public class CommentController extends BaseController{
             int limit,
             HttpServletRequest request
     ){
-        UserDomain user = this.user(request);
+        User user = this.user(request);
 
-        PageInfo<CommentDomain> comments = commentService.getCommentsByCond(new CommentCond(), page, limit);
+        Page<Comment> comments = commentService.getCommentsByCond(new CommentCond(), page, limit);
         request.setAttribute("comments", comments);
         return "admin/comment_list";
     }
@@ -62,9 +60,10 @@ public class CommentController extends BaseController{
     ){
 
         try {
-            CommentDomain comment = commentService.getCommentById(coid);
-            if (null == comment)
+            Comment comment = commentService.getCommentById(coid);
+            if (null == comment) {
                 throw BusinessException.withErrorCode(ErrorConstant.Comment.COMMENT_NOT_EXIST);
+            }
 
             commentService.deleteComment(coid);
         } catch (Exception e) {
@@ -87,7 +86,7 @@ public class CommentController extends BaseController{
             String status
     ){
         try {
-            CommentDomain comment = commentService.getCommentById(coid);
+            Comment comment = commentService.getCommentById(coid);
             if (null != comment){
                 commentService.updateCommentStatus(coid, status);
             }else{

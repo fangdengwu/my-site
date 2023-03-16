@@ -5,14 +5,12 @@ import cn.luischen.constant.Types;
 import cn.luischen.controller.BaseController;
 import cn.luischen.dto.cond.MetaCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.MetaDomain;
+import cn.luischen.model.Meta;
 import cn.luischen.service.meta.MetaService;
 import cn.luischen.utils.APIResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +36,7 @@ public class LinksController extends BaseController {
 
         MetaCond metaCond = new MetaCond();
         metaCond.setType(Types.LINK.getType());
-        List<MetaDomain> metas = metaService.getMetas(metaCond);
+        List<Meta> metas = metaService.getMetas(metaCond);
         request.setAttribute("links", metas);
         return "admin/links";
     }
@@ -64,7 +62,7 @@ public class LinksController extends BaseController {
             int sort
     ){
         try {
-            MetaDomain meta = new MetaDomain();
+            Meta meta = new Meta();
             meta.setName(title);
             meta.setSlug(url);
             meta.setDescription(logo);

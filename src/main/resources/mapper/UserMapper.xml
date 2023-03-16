@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.luischen.dao.UserDao" >
     <sql id="BASE_TABLE">
-        t_users
+        t_user
     </sql>
 
     <sql id="BASE_COLUMN">
-        uid,username,password,email,homeUrl,screenName,created,activated,logged,groupName
+        uid,username,password,email,home_url,screen_name,created,activated,logged,group_name
     </sql>
 
-    <update id="updateUserInfo" parameterType="cn.luischen.model.UserDomain">
+    <update id="updateUserInfo" parameterType="cn.luischen.model.User">
         UPDATE
           <include refid="BASE_TABLE"/>
         <set>
@@ -17,7 +17,7 @@
                 password = #{password, jdbcType=VARCHAR},
             </if>
             <if test="screenName != null">
-                screenName = #{screenName, jdbcType=VARCHAR},
+                screen_name = #{screenName, jdbcType=VARCHAR},
             </if>
             <if test="email != null">
                 email = #{email, jdbcType=VARCHAR},
@@ -26,7 +26,7 @@
         WHERE uid = #{uid, jdbcType=INTEGER}
     </update>
 
-    <select id="getUserInfoById" resultType="cn.luischen.model.UserDomain">
+    <select id="getUserInfoById" resultType="cn.luischen.model.User">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -35,7 +35,7 @@
         uid = #{uid, jdbcType=INTEGER}
     </select>
 
-    <select id="getUserInfoByCond" resultType="cn.luischen.model.UserDomain">
+    <select id="getUserInfoByCond" resultType="cn.luischen.model.User">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM

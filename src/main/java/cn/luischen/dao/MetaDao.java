@@ -2,7 +2,8 @@ package cn.luischen.dao;
 
 import cn.luischen.dto.MetaDto;
 import cn.luischen.dto.cond.MetaCond;
-import cn.luischen.model.MetaDomain;
+import cn.luischen.model.Meta;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,14 @@ import java.util.Map;
  */
 @Mapper
 @Component
-public interface MetaDao {
+public interface MetaDao extends BaseMapper<Meta> {
 
     /**
      * 添加项目
      * @param meta
      * @return
      */
-    int addMeta(MetaDomain meta);
+    int addMeta(Meta meta);
 
     /**
      * 删除项目
@@ -37,14 +38,14 @@ public interface MetaDao {
      * @param meta
      * @return
      */
-    int updateMeta(MetaDomain meta);
+    int updateMeta(Meta meta);
 
     /**
      * 根据编号获取项目
      * @param mid
      * @return
      */
-    MetaDomain getMetaById(@Param("mid") Integer mid);
+    Meta getMetaById(@Param("mid") Integer mid);
 
 
     /**
@@ -52,7 +53,7 @@ public interface MetaDao {
      * @param metaCond
      * @return
      */
-    List<MetaDomain> getMetasByCond(MetaCond metaCond);
+    List<Meta> getMetasByCond(MetaCond metaCond);
 
     /**
      * 根据类型获取meta数量

@@ -1,6 +1,7 @@
 package cn.luischen.dao;
 
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.User;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
  * Created by winterchen on 2018/4/20.
  */
 @Mapper
-public interface UserDao {
+public interface UserDao extends BaseMapper<User> {
 
     /**
      * @Author: winterchen
@@ -16,7 +17,7 @@ public interface UserDao {
      * @Date: 2018/4/20
      * @param user
      */
-    int updateUserInfo(UserDomain user);
+    int updateUserInfo(User user);
 
     /**
      * @Author: winterchen
@@ -24,7 +25,7 @@ public interface UserDao {
      * @Date: 2018/4/20
      * @param uId 主键
      */
-    UserDomain getUserInfoById(@Param("uid") Integer uId);
+    User getUserInfoById(@Param("uid") Integer uId);
 
     /**
      * 根据用户名和密码获取用户信息
@@ -32,6 +33,6 @@ public interface UserDao {
      * @param password
      * @return
      */
-    UserDomain getUserInfoByCond(@Param("username") String username, @Param("password") String password);
+    User getUserInfoByCond(@Param("username") String username, @Param("password") String password);
 
 }

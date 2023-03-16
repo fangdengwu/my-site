@@ -6,18 +6,16 @@ import cn.luischen.controller.BaseController;
 import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.dto.cond.MetaCond;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.ContentDomain;
-import cn.luischen.model.MetaDomain;
+import cn.luischen.model.Content;
+import cn.luischen.model.Meta;
 import cn.luischen.service.content.ContentService;
 import cn.luischen.service.log.LogService;
 import cn.luischen.service.meta.MetaService;
 import cn.luischen.utils.APIResponse;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +56,7 @@ public class ArticleController extends BaseController {
             @RequestParam(name = "limit", required = false, defaultValue = "15")
             int limit
     ){
-        PageInfo<ContentDomain> articles = contentService.getArticlesByCond(new ContentCond(), page, limit);
+        Page<Content> articles = contentService.getArticlesByCond(new ContentCond(), page, limit);
         request.setAttribute("articles", articles);
         return "admin/article_list";
     }
@@ -69,7 +67,7 @@ public class ArticleController extends BaseController {
     public String newArticle(HttpServletRequest request){
         MetaCond metaCond = new MetaCond();
         metaCond.setType(Types.CATEGORY.getType());
-        List<MetaDomain> metas = metaService.getMetas(metaCond);
+        List<Meta> metas = metaService.getMetas(metaCond);
         request.setAttribute("categories", metas);
         return "admin/article_edit";
     }
@@ -107,7 +105,7 @@ public class ArticleController extends BaseController {
             @RequestParam(name = "allowComment", required = true)
             Boolean allowComment
             ){
-        ContentDomain contentDomain = new ContentDomain();
+        Content contentDomain = new Content();
         contentDomain.setTitle(title);
         contentDomain.setTitlePic(titlePic);
         contentDomain.setSlug(slug);
@@ -134,11 +132,11 @@ public class ArticleController extends BaseController {
                     Integer cid,
             HttpServletRequest request
     ){
-        ContentDomain content = contentService.getArticleById(cid);
+        Content content = contentService.getArticleById(cid);
         request.setAttribute("contents", content);
         MetaCond metaCond = new MetaCond();
         metaCond.setType(Types.CATEGORY.getType());
-        List<MetaDomain> categories = metaService.getMetas(metaCond);
+        List<Meta> categories = metaService.getMetas(metaCond);
         request.setAttribute("categories", categories);
         request.setAttribute("active", "article");
         return "admin/article_edit";
@@ -180,7 +178,7 @@ public class ArticleController extends BaseController {
             @RequestParam(name = "allowComment", required = true)
                     Boolean allowComment
     ){
-        ContentDomain contentDomain = new ContentDomain();
+        Content contentDomain = new Content();
         contentDomain.setCid(cid);
         contentDomain.setTitle(title);
         contentDomain.setTitlePic(titlePic);

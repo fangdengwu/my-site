@@ -48,9 +48,18 @@ spring:
             max-request-size: 100Mb
 
 
-mybatis:
+mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: cn.luischen.model
+  global-config:
+    db-config:
+      # 配置表前缀
+      table-prefix: t_
+      # id自增
+      id-type: auto
+  configuration:
+    # 开启MP运行日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 
 #pagehelper

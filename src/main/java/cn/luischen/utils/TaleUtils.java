@@ -3,7 +3,7 @@ package cn.luischen.utils;
 import cn.luischen.constant.WebConst;
 import cn.luischen.controller.admin.AttAchController;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.UserDomain;
+import cn.luischen.model.User;
 import org.apache.commons.lang3.StringUtils;
 import org.commonmark.Extension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
@@ -143,12 +143,12 @@ public class TaleUtils {
      *
      * @return
      */
-    public static UserDomain getLoginUser(HttpServletRequest request) {
+    public static User getLoginUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (null == session) {
             return null;
         }
-        return (UserDomain) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
+        return (User) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
     }
 
 

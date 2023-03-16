@@ -3,10 +3,9 @@ package cn.luischen.service.log.impl;
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.dao.LogDao;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.LogDomain;
+import cn.luischen.model.Log;
 import cn.luischen.service.log.LogService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void addLog(String action, String data, String ip, Integer authorId) {
-        LogDomain logDomain = new LogDomain();
+        Log logDomain = new Log();
         logDomain.setAuthorId(authorId);
         logDomain.setIp(ip);
         logDomain.setData(data);
@@ -41,10 +40,9 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public PageInfo<LogDomain> getLogs(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<LogDomain> logs = logDao.getLogs();
-        PageInfo<LogDomain> pageInfo = new PageInfo<>(logs);
-        return pageInfo;
+    public Page<Log> getLogs(int pageNum, int pageSize) {
+        Page page = new Page(pageNum, pageSize);
+        logDao.selectPage(page, null);
+        return page;
     }
 }

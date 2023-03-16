@@ -1,5 +1,6 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -7,11 +8,12 @@ import lombok.Data;
  * Created by winterchen on 2018/4/29.
  */
 @Data
-public class ContentDomain {
+public class Content {
 
     /**
      * 文章的主键编号
      */
+    @TableId(value = "cid")
     private Integer cid;
     /**
      * 内容标题
@@ -78,5 +80,7 @@ public class ContentDomain {
      * 允许出现在聚合中
      */
     private Integer allowFeed;
+
+    private static final long serialVersionUID = 1L;
 
 }

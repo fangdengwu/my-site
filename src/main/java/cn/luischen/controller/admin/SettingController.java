@@ -3,7 +3,7 @@ package cn.luischen.controller.admin;
 import cn.luischen.constant.LogActions;
 import cn.luischen.constant.WebConst;
 import cn.luischen.controller.BaseController;
-import cn.luischen.model.OptionsDomain;
+import cn.luischen.model.Option;
 import cn.luischen.service.log.LogService;
 import cn.luischen.service.option.OptionService;
 import cn.luischen.utils.APIResponse;
@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +42,7 @@ public class SettingController extends BaseController {
     @ApiOperation("进入设置页")
     @GetMapping(value = "")
     public String setting(HttpServletRequest request){
-        List<OptionsDomain> optionsList = optionService.getOptions();
+        List<Option> optionsList = optionService.getOptions();
         Map<String, String> options = new HashMap<>();
         optionsList.forEach((option) -> {
             options.put(option.getName(), option.getValue());
@@ -66,9 +65,9 @@ public class SettingController extends BaseController {
             optionService.saveOptions(querys);
 
             //刷新设置
-            List<OptionsDomain> options = optionService.getOptions();
+            List<Option> options = optionService.getOptions();
             if(! CollectionUtils.isEmpty(options)){
-                WebConst.initConfig = options.stream().collect(Collectors.toMap(OptionsDomain::getName,OptionsDomain::getValue));
+                WebConst.initConfig = options.stream().collect(Collectors.toMap(Option::getName, Option::getValue));
             }
             logService.addLog(LogActions.SYS_SETTING.getAction(), GsonUtils.toJsonString(querys), request.getRemoteAddr(), this.getUid(request));
             return APIResponse.success();

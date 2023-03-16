@@ -13,7 +13,7 @@
 
     <!-- 附件的基本列 -->
     <sql id="BASE_COLUMN">
-        aa.id, aa.fname, aa.ftype, aa.fkey, aa.authorId, aa.created,
+        aa.id, aa.fname, aa.ftype, aa.fkey, aa.author_id, aa.created,
     </sql>
 
     <!-- 关联查询的用户表需要的字段 -->
@@ -23,11 +23,11 @@
 
 
     <!-- 新增单个附件 -->
-    <insert id="addAttAch" parameterType="cn.luischen.model.AttAchDomain">
+    <insert id="addAttAch" parameterType="cn.luischen.model.AttAch">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            fname, ftype, fkey, authorId, created,
+            fname, ftype, fkey, author_id, created,
         </trim>
         <trim  prefix="VALUES(" suffix=")" suffixOverrides=",">
             #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{fkey, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
@@ -39,7 +39,7 @@
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            fname, ftype, fkey, authorId, created,
+            fname, ftype, fkey, author_id, created,
         </trim>
         VALUES
         <foreach collection="list" item="AttAchDomain" index="index" separator=",">
@@ -60,7 +60,7 @@
     </delete>
 
     <!-- 更新附件信息 -->
-    <update id="updateAttAch" parameterType="cn.luischen.model.AttAchDomain">
+    <update id="updateAttAch" parameterType="cn.luischen.model.AttAch">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -71,7 +71,7 @@
                 ftype = #{ftype, jdbcType=VARCHAR},
             </if>
             <if test="authorId != null">
-                authorId = #{authorId,jdbcType=INTEGER},
+                author_id = #{authorId,jdbcType=INTEGER},
                 created = UNIX_TIMESTAMP(NOW()),
             </if>
         </set>
@@ -87,7 +87,7 @@
         FROM
         <include refid="BASE_TABLE"/> AS aa
         LEFT JOIN <include refid="TABLE_USER"/> AS u
-        ON aa.authorId = u.uid
+        ON aa.author_id = u.uid
         WHERE aa.id = #{id, jdbcType=INTEGER}
     </select>
 
@@ -101,7 +101,7 @@
         FROM
         <include refid="BASE_TABLE"/> AS aa
         LEFT JOIN <include refid="TABLE_USER"/> AS u
-        ON aa.authorId = u.uid
+        ON aa.author_id = u.uid
         ORDER BY aa.created DESC
     </select>
 

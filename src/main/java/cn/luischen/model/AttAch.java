@@ -1,5 +1,6 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -7,9 +8,10 @@ import lombok.Data;
  * Created by winterchen on 2018/4/29.
  */
 @Data
-public class AttAchDomain {
+public class AttAch {
 
     /** 主键编号 */
+    @TableId(value = "id")
     private Integer id;
     /** 文件名称 */
     private String fname;

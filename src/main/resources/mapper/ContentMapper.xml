@@ -3,7 +3,7 @@
 <mapper namespace="cn.luischen.dao.ContentDao">
 
     <sql id="BASE_TABLE">
-      t_contents
+      t_content
     </sql>
 
     <!-- 用户表 -->
@@ -13,9 +13,9 @@
 
     <!-- 文章的基本列 -->
     <sql id="BASE_COLUMN">
-        c.cid, c.title, c.titlePic, c.slug, c.created, c.modified, c.content, c.authorId,
-        c.type, c.status, c.tags, c.categories, c.hits, c.commentsNum, c.allowComment,
-        c.allowPing, c.allowFeed
+        c.cid, c.title, c.title_pic, c.slug, c.created, c.modified, c.content, c.author_id,
+        c.type, c.status, c.tags, c.categories, c.hits, c.comments_num, c.allow_comment,
+        c.allow_ping, c.allow_feed
     </sql>
 
     <!-- 关联查询的用户表需要的字段 -->
@@ -24,13 +24,13 @@
     </sql>
 
     <!-- 添加文章 -->
-    <insert id="addArticle" parameterType="cn.luischen.model.ContentDomain" useGeneratedKeys="true" keyProperty="cid">
+    <insert id="addArticle" parameterType="cn.luischen.model.Content" useGeneratedKeys="true" keyProperty="cid">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            title, titlePic, slug, created, content, authorId,
-            type, status, tags, categories, hits, commentsNum, allowComment,
-            allowPing, allowFeed,
+            title, title_pic, slug, created, content, author_id,
+            type, status, tags, categories, hits, comments_num, allow_comment,
+            allow_ping, allow_feed,
         </trim>
         <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
             #{title, jdbcType=VARCHAR}, #{titlePic, jdbcType=VARCHAR}, #{slug, jdbcType=VARCHAR}, UNIX_TIMESTAMP(NOW()),
@@ -49,7 +49,7 @@
     </delete>
 
     <!-- 更新文章信息 -->
-    <update id="updateArticleById" parameterType="cn.luischen.model.ContentDomain">
+    <update id="updateArticleById" parameterType="cn.luischen.model.Content">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -100,13 +100,13 @@
     <update id="updateArticleCommentCountById" >
         UPDATE
         <include refid="BASE_TABLE"/>
-        SET commentsNum = #{commentsNum, jdbcType=INTEGER}
+        SET comments_num = #{commentsNum, jdbcType=INTEGER}
         WHERE cid = #{cid, jdbcType=INTEGER}
     </update>
 
 
     <!-- 根据主键编号获取文章信息 -->
-    <select id="getArticleById" resultType="cn.luischen.model.ContentDomain">
+    <select id="getArticleById" resultType="cn.luischen.model.Content">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -115,7 +115,7 @@
     </select>
 
     <!-- 根据条件查询文章 -->
-    <select id="getArticlesByCond" resultType="cn.luischen.model.ContentDomain"
+    <select id="getArticlesByCond" resultType="cn.luischen.model.Content"
             parameterType="cn.luischen.dto.cond.ContentCond">
         SELECT
         <include refid="BASE_COLUMN"/>
@@ -180,7 +180,7 @@
         order by date desc
     </select>
     
-    <select id="getRecentlyArticle" resultType="cn.luischen.model.ContentDomain">
+    <select id="getRecentlyArticle" resultType="cn.luischen.model.Content">
         SELECT
             cid, title
         FROM
@@ -189,7 +189,7 @@
     </select>
     
     <!-- 模糊搜索 -->
-    <select id="searchArticle" resultType="cn.luischen.model.ContentDomain">
+    <select id="searchArticle" resultType="cn.luischen.model.Content">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM

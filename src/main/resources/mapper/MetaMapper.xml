@@ -3,7 +3,7 @@
 <mapper namespace="cn.luischen.dao.MetaDao">
 
     <sql id="BASE_TABLE">
-      t_metas
+      t_meta
     </sql>
 
     <sql id="RELATION_SHIP_TABLE">
@@ -16,7 +16,7 @@
     </sql>
 
     <!-- 添加项目信息 -->
-    <insert id="addMeta" parameterType="cn.luischen.model.MetaDomain" useGeneratedKeys="true" keyProperty="mid">
+    <insert id="addMeta" parameterType="cn.luischen.model.Meta" useGeneratedKeys="true" keyProperty="mid">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -36,7 +36,7 @@
     </delete>
 
     <!-- 更新项目 -->
-    <update id="updateMeta" parameterType="cn.luischen.model.MetaDomain">
+    <update id="updateMeta" parameterType="cn.luischen.model.Meta">
         UPDATE
         <include refid="BASE_TABLE"/>
         <set>
@@ -63,7 +63,7 @@
     </update>
 
     <!-- 根据主键编号获取项目 -->
-    <select id="getMetaById" resultType="cn.luischen.model.MetaDomain">
+    <select id="getMetaById" resultType="cn.luischen.model.Meta">
         SELECT
         <include refid="BASE_COLUMN"/>
         FROM
@@ -72,7 +72,7 @@
     </select>
 
     <!-- 根据条件获取项目 -->
-    <select id="getMetasByCond" resultType="cn.luischen.model.MetaDomain"
+    <select id="getMetasByCond" resultType="cn.luischen.model.Meta"
                 parameterType="cn.luischen.dto.cond.MetaCond">
         SELECT
         <include refid="BASE_COLUMN"/>
@@ -96,7 +96,7 @@
         WHERE type = #{type, jdbcType=VARCHAR}
     </select>
 
-    <resultMap id="BaseResultMap" type="cn.luischen.model.MetaDomain">
+    <resultMap id="BaseResultMap" type="cn.luischen.model.Meta">
         <id column="mid" jdbcType="INTEGER" property="mid" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="slug" jdbcType="VARCHAR" property="slug" />

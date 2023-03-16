@@ -1,5 +1,6 @@
 package cn.luischen.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -7,9 +8,10 @@ import lombok.Data;
  * Created by winterchen on 2018/4/28.
  */
 @Data
-public class OptionsDomain {
+public class Option {
 
     /** 名称 */
+    @TableId(value = "name")
     private String name;
     /** 内容 */
     private String value;
