@@ -1,7 +1,7 @@
 package cn.luischen.utils;
 
 import cn.luischen.constant.WebConst;
-import cn.luischen.controller.admin.AttAchController;
+import cn.luischen.controller.admin.AttachController;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.User;
 import org.apache.commons.lang3.StringUtils;
@@ -411,8 +411,8 @@ public class TaleUtils {
 
     public static String getFileKey(String name) {
         String prefix = "/upload/" + DateKit.dateFormat(new Date(), "yyyy/MM");
-        if (!new File(AttAchController.CLASSPATH + prefix).exists()) {
-            new File(AttAchController.CLASSPATH + prefix).mkdirs();
+        if (!new File(AttachController.CLASSPATH + prefix).exists()) {
+            new File(AttachController.CLASSPATH + prefix).mkdirs();
         }
 
         name = StringUtils.trimToNull(name);

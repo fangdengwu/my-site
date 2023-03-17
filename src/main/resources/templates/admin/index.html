@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="panel-body">
                                     <ul class="list-group" >
-                                        <li class="list-group-item" th:each="log : ${logs}">
+                                        <li class="list-group-item" th:each="log : ${logs.records}">
                                             <span th:text="${commons.fmtdate(log.created, 'yyyy-MM-dd HH:mm:ss')} +' => '+ ${log.action}"></span>
                                         </li>
                                     </ul>

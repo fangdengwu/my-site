@@ -3,7 +3,7 @@ package cn.luischen.service.site.impl;
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.constant.Types;
 import cn.luischen.constant.WebConst;
-import cn.luischen.dao.AttAchDao;
+import cn.luischen.dao.AttachDao;
 import cn.luischen.dao.CommentDao;
 import cn.luischen.dao.ContentDao;
 import cn.luischen.dao.MetaDao;
@@ -15,12 +15,12 @@ import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.Comment;
 import cn.luischen.model.Content;
+import cn.luischen.model.Meta;
 import cn.luischen.service.site.SiteService;
 import cn.luischen.utils.DateKit;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class SiteServiceImpl implements SiteService{
     private MetaDao metaDao;
 
     @Autowired
-    private AttAchDao attAchDao;
+    private AttachDao attachDao;
 
     @Override
     @Cacheable(value = "siteCache", key = "'comments_' + #p0")
@@ -58,7 +58,7 @@ public class SiteServiceImpl implements SiteService{
         if (limit < 0 || limit > 10){
             limit = 10;
         }
-        List<Comment> rs = commentDao.getCommentsByCond(new CommentCond());
+        List<Comment> rs = commentDao.selectList(null);
         log.debug("Exit recentComments method");
         return rs;
     }
@@ -70,7 +70,7 @@ public class SiteServiceImpl implements SiteService{
         if (limit < 0 || limit > 10) {
             limit = 10;
         }
-        List<Content> rs = contentDao.getArticlesByCond(new ContentCond());
+        List<Content> rs = contentDao.selectList(null);
         log.debug("Exit recentArticles method");
         return rs;
     }
@@ -82,7 +82,7 @@ public class SiteServiceImpl implements SiteService{
         if (null == coid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        Comment comment = commentDao.getCommentById(coid);
+        Comment comment = commentDao.selectById(coid);
         log.debug("Exit recentComment method");
         return comment;
     }
@@ -92,13 +92,15 @@ public class SiteServiceImpl implements SiteService{
     public StatisticsDto getStatistics() {
         log.debug("Enter recentStatistics method");
         //文章总数
-        Long artices = contentDao.getArticleCount();
+        Integer artices = contentDao.selectCount(null);
 
-        Long comments = commentDao.getCommentsCount();
+        Integer comments = commentDao.selectCount(null);
 
-        Long links = metaDao.getMetasCountByType(Types.LINK.getType());
+        LambdaQueryWrapper<Meta> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Meta::getType, Types.LINK.getType());
+        Integer links = metaDao.selectCount(lqw);
 
-        Long atts = attAchDao.getAttsCount();
+        Integer atts = attachDao.selectCount(null);
 
         StatisticsDto rs = new StatisticsDto();
         rs.setArticles(artices);
@@ -138,11 +140,14 @@ public class SiteServiceImpl implements SiteService{
                 Date sd = DateKit.dateFormat(date, "yyyy年MM月");
                 int start = DateKit.getUnixTimeByDate(sd);
                 int end = DateKit.getUnixTimeByDate(DateKit.dateAdd(DateKit.INTERVAL_MONTH, sd, 1)) - 1;
-                ContentCond cond = new ContentCond();
-                cond.setStartTime(start);
-                cond.setEndTime(end);
-                cond.setType(contentCond.getType());
-                List<Content> contents = contentDao.getArticlesByCond(cond);
+
+                LambdaQueryWrapper<Content> lqw = new LambdaQueryWrapper<>();
+                lqw.ge(Content::getCreated, start);
+                lqw.le(Content::getCreated, end);
+                lqw.eq(StringUtils.isNotEmpty(contentCond.getType()), Content::getType, contentCond.getType());
+                lqw.orderByDesc(Content::getCreated);
+
+                List<Content> contents = contentDao.selectList(lqw);
                 archive.setArticles(contents);
             });
         }

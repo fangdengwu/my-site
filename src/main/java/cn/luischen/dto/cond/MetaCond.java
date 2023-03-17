@@ -1,9 +1,12 @@
 package cn.luischen.dto.cond;
 
+import lombok.Data;
+
 /**
  * meta查询条件
  * Created by winterchen on 2018/4/30.
  */
+@Data
 public class MetaCond {
 
     /**
@@ -14,21 +17,4 @@ public class MetaCond {
      * 类型
      */
     private String type;
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

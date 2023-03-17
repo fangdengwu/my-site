@@ -57,11 +57,10 @@ public class IndexController extends BaseController{
         StatisticsDto statistics = siteService.getStatistics();
         // 取最新的20条日志
         Page<Log> logs = logService.getLogs(1, 5);
-        List<Log> list = logs.getRecords();
         request.setAttribute("comments", comments);
         request.setAttribute("articles", contents);
         request.setAttribute("statistics", statistics);
-        request.setAttribute("logs", list);
+        request.setAttribute("logs", logs);
         log.info("Exit admin index method");
         return "admin/index";
     }

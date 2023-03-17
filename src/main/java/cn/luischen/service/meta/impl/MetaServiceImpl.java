@@ -6,6 +6,7 @@ import cn.luischen.constant.WebConst;
 import cn.luischen.dao.MetaDao;
 import cn.luischen.dao.RelationShipDao;
 import cn.luischen.dto.MetaDto;
+import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.dto.cond.MetaCond;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.Content;
@@ -13,6 +14,7 @@ import cn.luischen.model.Meta;
 import cn.luischen.model.RelationShip;
 import cn.luischen.service.content.ContentService;
 import cn.luischen.service.meta.MetaService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -44,9 +46,10 @@ public class MetaServiceImpl implements MetaService {
     @Override
     @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
     public void addMeta(Meta meta) {
-        if (null == meta)
+        if (null == meta) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        metaDao.addMeta(meta);
+        }
+        metaDao.insert(meta);
 
     }
 
@@ -57,23 +60,24 @@ public class MetaServiceImpl implements MetaService {
             MetaCond metaCond = new MetaCond();
             metaCond.setName(name);
             metaCond.setType(type);
-            List<Meta> metas = metaDao.getMetasByCond(metaCond);
+            List<Meta> metas = metaDao.selectList(getQueryWrapperByCond(metaCond));
             if (null == metas || metas.size() == 0){
                 Meta metaDomain = new Meta();
                 metaDomain.setName(name);
                 if (null != mid){
-                    Meta meta = metaDao.getMetaById(mid);
-                    if (null != meta)
+                    Meta meta = metaDao.selectById(mid);
+                    if (null != meta) {
                         metaDomain.setMid(mid);
+                    }
 
-                    metaDao.updateMeta(metaDomain);
+                    metaDao.updateById(metaDomain);
                     //更新原有的文章分类
                     if(meta !=null) {
                         contentService.updateCategory(meta.getName(), name);
                     }
                 } else {
                     metaDomain.setType(type);
-                    metaDao.addMeta(metaDomain);
+                    metaDao.insert(metaDomain);
                 }
             } else {
                 throw BusinessException.withErrorCode(ErrorConstant.Meta.META_IS_EXIST);
@@ -86,8 +90,9 @@ public class MetaServiceImpl implements MetaService {
     @Override
     @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
     public void addMetas(Integer cid, String names, String type) {
-        if (null == cid)
+        if (null == cid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
 
         if (StringUtils.isNotBlank(names) && StringUtils.isNotBlank(type)) {
             String[] nameArr = StringUtils.split(names, ",");
@@ -121,12 +126,16 @@ public class MetaServiceImpl implements MetaService {
             mid = metaDomain.getMid();
         }
         if (mid != 0){
-            Long count = relationShipDao.getCountById(cid, mid);
+            LambdaQueryWrapper<RelationShip> lwq = new LambdaQueryWrapper<>();
+            lwq.eq(RelationShip::getCid, cid);
+            lwq.eq(RelationShip::getMid, mid);
+            Integer count = relationShipDao.selectCount(lwq);
+
             if (count == 0){
                 RelationShip relationShip = new RelationShip();
                 relationShip.setCid(cid);
                 relationShip.setMid(mid);
-                relationShipDao.addRelationShip(relationShip);
+                relationShipDao.insert(relationShip);
             }
 
         }
@@ -135,16 +144,20 @@ public class MetaServiceImpl implements MetaService {
     @Override
     @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
     public void deleteMetaById(Integer mid) {
-        if (null == mid)
+        if (null == mid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
 
-        Meta meta = metaDao.getMetaById(mid);
+        Meta meta = metaDao.selectById(mid);
         if (null != meta){
             String type = meta.getType();
             String name = meta.getName();
-            metaDao.deleteMetaById(mid);
+            metaDao.deleteById(mid);
             //需要把相关的数据删除
-            List<RelationShip> relationShips = relationShipDao.getRelationShipByMid(mid);
+            LambdaQueryWrapper<RelationShip> lwq = new LambdaQueryWrapper<>();
+            lwq.eq(RelationShip::getMid, mid);
+            List<RelationShip> relationShips = relationShipDao.selectList(lwq);
+
             if (null != relationShips && relationShips.size() > 0){
                 for (RelationShip relationShip : relationShips) {
                     Content article = contentService.getArticleById(relationShip.getCid());
@@ -161,7 +174,8 @@ public class MetaServiceImpl implements MetaService {
                         contentService.updateArticleById(temp);
                     }
                 }
-                relationShipDao.deleteRelationShipByMid(mid);
+
+                relationShipDao.delete(lwq);
             }
         }
 
@@ -172,24 +186,26 @@ public class MetaServiceImpl implements MetaService {
     @Override
     @CacheEvict(value={"metaCaches","metaCache"},allEntries=true,beforeInvocation=true)
     public void updateMeta(Meta meta) {
-        if (null == meta || null == meta.getMid())
+        if (null == meta || null == meta.getMid()) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        metaDao.updateMeta(meta);
+        }
+        metaDao.updateById(meta);
 
     }
 
     @Override
     @Cacheable(value = "metaCache", key = "'metaById_' + #p0")
     public Meta getMetaById(Integer mid) {
-        if (null == mid)
+        if (null == mid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        return metaDao.getMetaById(mid);
+        }
+        return metaDao.selectById(mid);
     }
 
     @Override
     @Cacheable(value = "metaCaches", key = "'metas_' + #p0")
     public List<Meta> getMetas(MetaCond metaCond) {
-        return metaDao.getMetasByCond(metaCond);
+        return metaDao.selectList(getQueryWrapperByCond(metaCond));
     }
 
 
@@ -224,5 +240,15 @@ public class MetaServiceImpl implements MetaService {
             return sbuf.substring(1);
         }
         return "";
+    }
+
+    private LambdaQueryWrapper<Meta> getQueryWrapperByCond(MetaCond metaCond) {
+
+        LambdaQueryWrapper<Meta> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(StringUtils.isNotEmpty(metaCond.getName()), Meta::getName, metaCond.getName());
+        lqw.eq(StringUtils.isNotEmpty(metaCond.getType()), Meta::getType, metaCond.getType());
+        lqw.orderByAsc(Meta::getSort);
+
+        return lqw;
     }
 }

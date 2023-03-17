@@ -5,6 +5,7 @@ import cn.luischen.dao.OptionDao;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.Option;
 import cn.luischen.service.option.OptionService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,9 +29,11 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @CacheEvict(value={"optionsCache","optionCache"},allEntries=true,beforeInvocation=true)
     public void deleteOptionByName(String name) {
-        if(StringUtils.isBlank(name))
+        if(StringUtils.isBlank(name)) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        optionDao.deleteOptionByName(name);
+        }
+
+        optionDao.deleteById(name);
 
     }
 
@@ -38,12 +41,13 @@ public class OptionServiceImpl implements OptionService {
     @Transactional
     @CacheEvict(value={"optionsCache","optionCache"},allEntries=true,beforeInvocation=true)
     public void updateOptionByName(String name, String value) {
-        if(StringUtils.isBlank(name))
+        if(StringUtils.isBlank(name)) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
+        }
         Option option = new Option();
         option.setName(name);
         option.setValue(value);
-        optionDao.updateOptionByName(option);
+        optionDao.updateById(option);
 
     }
 
@@ -59,14 +63,15 @@ public class OptionServiceImpl implements OptionService {
     @Override
     @Cacheable(value = "optionCache", key = "'optionByName_' + #p0")
     public Option getOptionByName(String name) {
-        if(StringUtils.isBlank(name))
+        if(StringUtils.isBlank(name)) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
-        return optionDao.getOptionByName(name);
+        }
+        return optionDao.selectById(name);
     }
 
     @Override
     @Cacheable(value = "optionsCache", key = "'options_'")
     public List<Option> getOptions() {
-        return optionDao.getOptions();
+        return optionDao.selectList(null);
     }
 }

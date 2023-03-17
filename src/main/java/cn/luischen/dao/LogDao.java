@@ -12,24 +12,4 @@ import java.util.List;
  */
 @Mapper
 public interface LogDao extends BaseMapper<Log> {
-
-    /**
-     * 添加日志
-     * @param logDomain
-     * @return
-     */
-    int addLog(Log logDomain);
-
-    /**
-     * 删除日志
-     * @param id
-     * @return
-     */
-    int deleteLogById(@Param("id") Integer id);
-
-    /**
-     * 获取日志
-     * @return
-     */
-    List<Log> getLogs();
 }

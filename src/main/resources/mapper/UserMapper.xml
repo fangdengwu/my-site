@@ -9,46 +9,5 @@
         uid,username,password,email,home_url,screen_name,created,activated,logged,group_name
     </sql>
 
-    <update id="updateUserInfo" parameterType="cn.luischen.model.User">
-        UPDATE
-          <include refid="BASE_TABLE"/>
-        <set>
-            <if test="password != null">
-                password = #{password, jdbcType=VARCHAR},
-            </if>
-            <if test="screenName != null">
-                screen_name = #{screenName, jdbcType=VARCHAR},
-            </if>
-            <if test="email != null">
-                email = #{email, jdbcType=VARCHAR},
-            </if>
-        </set>
-        WHERE uid = #{uid, jdbcType=INTEGER}
-    </update>
-
-    <select id="getUserInfoById" resultType="cn.luischen.model.User">
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        WHERE
-        uid = #{uid, jdbcType=INTEGER}
-    </select>
-
-    <select id="getUserInfoByCond" resultType="cn.luischen.model.User">
-        SELECT
-        <include refid="BASE_COLUMN"/>
-        FROM
-        <include refid="BASE_TABLE"/>
-        <where>
-            <if test="username != null">
-                AND username = #{username, jdbcType=VARCHAR}
-            </if>
-            <if test="password != null">
-                AND password = #{password, jdbcType=VARCHAR}
-            </if>
-        </where>
-    </select>
-
 
 </mapper>
