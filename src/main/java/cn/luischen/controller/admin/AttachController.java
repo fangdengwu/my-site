@@ -4,11 +4,11 @@ import cn.luischen.api.QiniuCloudService;
 import cn.luischen.constant.ErrorConstant;
 import cn.luischen.constant.Types;
 import cn.luischen.constant.WebConst;
-import cn.luischen.dto.AttAchDto;
+import cn.luischen.dto.AttachDto;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.AttAch;
+import cn.luischen.model.Attach;
 import cn.luischen.model.User;
-import cn.luischen.service.attach.AttAchService;
+import cn.luischen.service.attach.AttachService;
 import cn.luischen.utils.APIResponse;
 import cn.luischen.utils.Commons;
 import cn.luischen.utils.TaleUtils;
@@ -33,13 +33,13 @@ import java.io.IOException;
 @Api("附件相关接口")
 @Controller
 @RequestMapping("admin/attach")
-public class AttAchController {
+public class AttachController {
 
     public static final String CLASSPATH = TaleUtils.getUplodFilePath();
 
 
     @Autowired
-    private AttAchService attAchService;
+    private AttachService attachService;
     @Autowired
     private QiniuCloudService qiniuCloudService;
 
@@ -56,7 +56,7 @@ public class AttAchController {
             int limit,
             HttpServletRequest request
     ){
-        Page<AttAchDto> atts = attAchService.getAtts(page, limit);
+        Page<AttachDto> atts = attachService.getAtts(page, limit);
         request.setAttribute("attachs", atts);
         request.setAttribute(Types.ATTACH_URL.getType(), Commons.site_option(Types.ATTACH_URL.getType(), Commons.site_url()));
         request.setAttribute("max_file_size", WebConst.MAX_FILE_SIZE / 1024);
@@ -81,16 +81,16 @@ public class AttAchController {
             String fileName = TaleUtils.getFileKey(file.getOriginalFilename()).replaceFirst("/","");
 
             qiniuCloudService.upload(file, fileName);
-            AttAch attAch = new AttAch();
+            Attach attach = new Attach();
             HttpSession session = request.getSession();
             User sessionUser = (User) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
-            attAch.setAuthorId(sessionUser.getUid());
-            attAch.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
-            attAch.setFname(fileName);
+            attach.setAuthorId(sessionUser.getUid());
+            attach.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
+            attach.setFname(fileName);
             String baseUrl = qiniuCloudService.QINIU_UPLOAD_SITE.endsWith("/") ? qiniuCloudService.QINIU_UPLOAD_SITE : qiniuCloudService.QINIU_UPLOAD_SITE + "/";
-            attAch.setFkey(baseUrl + fileName);
-            attAchService.addAttAch(attAch);
-            response.getWriter().write( "{\"success\": 1, \"message\":\"上传成功\",\"url\":\"" + attAch.getFkey() + "\"}" );
+            attach.setFkey(baseUrl + fileName);
+            attachService.addAttach(attach);
+            response.getWriter().write( "{\"success\": 1, \"message\":\"上传成功\",\"url\":\"" + attach.getFkey() + "\"}" );
         } catch (IOException e) {
             e.printStackTrace();
             try {
@@ -122,15 +122,15 @@ public class AttAchController {
                 String fileName = TaleUtils.getFileKey(file.getOriginalFilename()).replaceFirst("/","");
 
                 qiniuCloudService.upload(file, fileName);
-                AttAch attAch = new AttAch();
+                Attach attach = new Attach();
                 HttpSession session = request.getSession();
                 User sessionUser = (User) session.getAttribute(WebConst.LOGIN_SESSION_KEY);
-                attAch.setAuthorId(sessionUser.getUid());
-                attAch.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
-                attAch.setFname(fileName);
+                attach.setAuthorId(sessionUser.getUid());
+                attach.setFtype(TaleUtils.isImage(file.getInputStream()) ? Types.IMAGE.getType() : Types.FILE.getType());
+                attach.setFname(fileName);
                 String baseUrl = qiniuCloudService.QINIU_UPLOAD_SITE.endsWith("/") ? qiniuCloudService.QINIU_UPLOAD_SITE : qiniuCloudService.QINIU_UPLOAD_SITE + "/";
-				attAch.setFkey(baseUrl + fileName);
-                attAchService.addAttAch(attAch);
+				attach.setFkey(baseUrl + fileName);
+                attachService.addAttach(attach);
             }
             return APIResponse.success();
         } catch (IOException e) {
@@ -150,12 +150,12 @@ public class AttAchController {
             HttpServletRequest request
     ){
         try {
-            AttAchDto attAch = attAchService.getAttAchById(id);
-            if (null == attAch) {
+            AttachDto attach = attachService.getAttachById(id);
+            if (null == attach) {
                 throw BusinessException.withErrorCode(ErrorConstant.Att.DELETE_ATT_FAIL +  ": 文件不存在");
             }
-            qiniuCloudService.delete(attAch.getFname());
-            attAchService.deleteAttAch(id);
+            qiniuCloudService.delete(attach.getFname());
+            attachService.deleteAttach(id);
             return APIResponse.success();
         } catch (Exception e) {
             e.printStackTrace();

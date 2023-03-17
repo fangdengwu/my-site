@@ -6,6 +6,7 @@ import cn.luischen.constant.WebConst;
 import cn.luischen.dao.CommentDao;
 import cn.luischen.dao.ContentDao;
 import cn.luischen.dao.RelationShipDao;
+import cn.luischen.dto.cond.CommentCond;
 import cn.luischen.dto.cond.ContentCond;
 import cn.luischen.exception.BusinessException;
 import cn.luischen.model.Comment;
@@ -13,6 +14,7 @@ import cn.luischen.model.Content;
 import cn.luischen.model.RelationShip;
 import cn.luischen.service.content.ContentService;
 import cn.luischen.service.meta.MetaService;
+import cn.luischen.utils.DateKit;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -47,30 +49,31 @@ public class ContentServiceImpl  implements ContentService {
     @Transactional
     @Override
     @CacheEvict(value={"articleCache","articleCaches","siteCache"},allEntries=true,beforeInvocation=true)
-    public void addArticle(Content contentDomain) {
-        if (null == contentDomain) {
+    public void addArticle(Content content) {
+        if (null == content) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        if (StringUtils.isBlank(contentDomain.getTitle())) {
+        if (StringUtils.isBlank(content.getTitle())) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_CAN_NOT_EMPTY);
         }
-        if (contentDomain.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
+        if (content.getTitle().length() > WebConst.MAX_TITLE_COUNT) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.TITLE_IS_TOO_LONG);
         }
-        if (StringUtils.isBlank(contentDomain.getContent())) {
+        if (StringUtils.isBlank(content.getContent())) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_CAN_NOT_EMPTY);
         }
-        if (contentDomain.getContent().length() > WebConst.MAX_TEXT_COUNT) {
+        if (content.getContent().length() > WebConst.MAX_TEXT_COUNT) {
             throw BusinessException.withErrorCode(ErrorConstant.Article.CONTENT_IS_TOO_LONG);
         }
 
         //标签和分类
-        String tags = contentDomain.getTags();
-        String categories = contentDomain.getCategories();
+        String tags = content.getTags();
+        String categories = content.getCategories();
 
-        contentDao.insert(contentDomain);
+        content.setCreated(DateKit.getCurrentUnixTime());
+        contentDao.insert(content);
 
-        int cid = contentDomain.getCid();
+        int cid = content.getCid();
         metaService.addMetas(cid, tags, Types.TAG.getType());
         metaService.addMetas(cid, categories, Types.CATEGORY.getType());
     }
@@ -84,31 +87,33 @@ public class ContentServiceImpl  implements ContentService {
         }
         contentDao.deleteById(cid);
         //同时也要删除该文章下的所有评论
-        List<Comment> comments = commentDao.getCommentsByCId(cid);
-        if (null != comments && comments.size() > 0){
-            comments.forEach(comment ->{
-                commentDao.deleteComment(comment.getCoid());
-            });
-        }
+        LambdaQueryWrapper<Comment> lwq = new LambdaQueryWrapper<>();
+        lwq.eq(Comment::getCid, cid);
+        commentDao.delete(lwq);
+
         //删除标签和分类关联
-        List<RelationShip> relationShips = relationShipDao.getRelationShipByCid(cid);
-        if (null != relationShips && relationShips.size() > 0){
-            relationShipDao.deleteRelationShipByCid(cid);
-        }
+        LambdaQueryWrapper<RelationShip> lwq1 = new LambdaQueryWrapper<>();
+        lwq1.eq(RelationShip::getCid, cid);
+        relationShipDao.delete(lwq1);
 
     }
 
     @Override
     @Transactional
     @CacheEvict(value={"articleCache","articleCaches","siteCache"},allEntries=true,beforeInvocation=true)
-    public void updateArticleById(Content contentDomain) {
+    public void updateArticleById(Content content) {
         //标签和分类
-        String tags = contentDomain.getTags();
-        String categories = contentDomain.getCategories();
+        String tags = content.getTags();
+        String categories = content.getCategories();
 
-        contentDao.updateArticleById(contentDomain);
-        int cid = contentDomain.getCid();
-        relationShipDao.deleteRelationShipByCid(cid);
+        content.setModified(DateKit.getCurrentUnixTime());
+        contentDao.updateById(content);
+        int cid = content.getCid();
+
+        LambdaQueryWrapper<RelationShip> lwq = new LambdaQueryWrapper<>();
+        lwq.eq(RelationShip::getCid, cid);
+        relationShipDao.delete(lwq);
+
         metaService.addMetas(cid, tags, Types.TAG.getType());
         metaService.addMetas(cid, categories, Types.CATEGORY.getType());
 
@@ -120,7 +125,7 @@ public class ContentServiceImpl  implements ContentService {
     public void updateCategory(String ordinal, String newCatefory) {
         ContentCond cond = new ContentCond();
         cond.setCategory(ordinal);
-        List<Content> articles = contentDao.getArticlesByCond(cond);
+        List<Content> articles = contentDao.selectList(getQueryWrapperByCond(cond));
         articles.forEach(article -> {
             article.setCategories(article.getCategories().replace(ordinal, newCatefory));
             contentDao.updateById(article);
@@ -153,18 +158,7 @@ public class ContentServiceImpl  implements ContentService {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
         Page<Content> page = new Page<>(pageNum, pageSize);
-        LambdaQueryWrapper<Content> lqw = new LambdaQueryWrapper<>();
-        lqw.like(StringUtils.isNotEmpty(contentCond.getTag()), Content::getTags, contentCond.getTag());
-        lqw.like(StringUtils.isNotEmpty(contentCond.getCategory()), Content::getCategories, contentCond.getCategory());
-        lqw.eq(StringUtils.isNotEmpty(contentCond.getStatus()), Content::getStatus, contentCond.getStatus());
-        lqw.like(StringUtils.isNotEmpty(contentCond.getTitle()), Content::getTitle, contentCond.getTitle());
-        lqw.like(StringUtils.isNotEmpty(contentCond.getContent()), Content::getContent, contentCond.getContent());
-        lqw.eq(StringUtils.isNotEmpty(contentCond.getType()), Content::getType, contentCond.getType());
-        lqw.ge(contentCond.getStartTime() != null, Content::getCreated, contentCond.getStartTime());
-        lqw.le(contentCond.getEndTime() != null, Content::getCreated, contentCond.getEndTime());
-        lqw.orderByDesc(Content::getCreated);
-
-        contentDao.selectPage(page, lqw);
+        contentDao.selectPage(page, getQueryWrapperByCond(contentCond));
         return page;
     }
 
@@ -191,5 +185,21 @@ public class ContentServiceImpl  implements ContentService {
 
         contentDao.selectPage(page, lqw);
         return page;
+    }
+
+    private LambdaQueryWrapper<Content> getQueryWrapperByCond(ContentCond contentCond) {
+
+        LambdaQueryWrapper<Content> lqw = new LambdaQueryWrapper<>();
+        lqw.like(StringUtils.isNotEmpty(contentCond.getTag()), Content::getTags, contentCond.getTag());
+        lqw.like(StringUtils.isNotEmpty(contentCond.getCategory()), Content::getCategories, contentCond.getCategory());
+        lqw.eq(StringUtils.isNotEmpty(contentCond.getStatus()), Content::getStatus, contentCond.getStatus());
+        lqw.like(StringUtils.isNotEmpty(contentCond.getTitle()), Content::getTitle, contentCond.getTitle());
+        lqw.like(StringUtils.isNotEmpty(contentCond.getContent()), Content::getContent, contentCond.getContent());
+        lqw.eq(StringUtils.isNotEmpty(contentCond.getType()), Content::getType, contentCond.getType());
+        lqw.ge(contentCond.getStartTime() != null, Content::getCreated, contentCond.getStartTime());
+        lqw.le(contentCond.getEndTime() != null, Content::getCreated, contentCond.getEndTime());
+        lqw.orderByDesc(Content::getCreated);
+
+        return lqw;
     }
 }

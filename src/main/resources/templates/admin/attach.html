@@ -76,7 +76,7 @@
                             </div>
                         </th:block>
                         <th:block th:unless="${commons.is_empty(attachs)}">
-                            <th:block th:each="attach : ${attachs.list}">
+                            <th:block th:each="attach : ${attachs.records}">
                                 <div class="col-md-2 text-center m-t-10">
                                     <a th:href="${attach.fkey}" target="_blank">
                                         <img class="attach-img"

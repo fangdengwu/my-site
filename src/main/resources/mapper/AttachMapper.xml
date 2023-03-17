@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.luischen.dao.AttAchDao">
+<mapper namespace="cn.luischen.dao.AttachDao">
 
     <sql id="BASE_TABLE">
         t_attach
@@ -22,27 +22,15 @@
     </sql>
 
 
-    <!-- 新增单个附件 -->
-    <insert id="addAttAch" parameterType="cn.luischen.model.AttAch">
-        INSERT INTO
-        <include refid="BASE_TABLE"/>
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            fname, ftype, fkey, author_id, created,
-        </trim>
-        <trim  prefix="VALUES(" suffix=")" suffixOverrides=",">
-            #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{fkey, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
-        </trim>
-    </insert>
-
     <!-- 批量新增附件 -->
-    <insert id="batchAddAttAch" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+    <insert id="batchAddAttach" parameterType="list" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
         <include refid="BASE_TABLE"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
             fname, ftype, fkey, author_id, created,
         </trim>
         VALUES
-        <foreach collection="list" item="AttAchDomain" index="index" separator=",">
+        <foreach collection="list" item="AttachDomain" index="index" separator=",">
             (
               <trim suffix="" suffixOverrides=",">
                   #{fname, jdbcType=VARCHAR}, #{ftype, jdbcType=VARCHAR}, #{authorId,jdbcType=INTEGER}, UNIX_TIMESTAMP(NOW()),
@@ -51,34 +39,8 @@
         </foreach>
     </insert>
 
-    <!-- 删除附件 -->
-    <delete id="deleteAttAch">
-        DELETE FROM
-        <include refid="BASE_TABLE"/>
-        WHERE
-        id = #{id, jdbcType=INTEGER}
-    </delete>
-
-    <!-- 更新附件信息 -->
-    <update id="updateAttAch" parameterType="cn.luischen.model.AttAch">
-        UPDATE
-        <include refid="BASE_TABLE"/>
-        <set>
-            <if test="fname != null">
-                fname = #{fname, jdbcType=VARCHAR},
-            </if>
-            <if test="ftype != null">
-                ftype = #{ftype, jdbcType=VARCHAR},
-            </if>
-            <if test="authorId != null">
-                author_id = #{authorId,jdbcType=INTEGER},
-                created = UNIX_TIMESTAMP(NOW()),
-            </if>
-        </set>
-    </update>
-
     <!-- 根据主键获取附件信息 -->
-    <select id="getAttAchById" resultType="cn.luischen.dto.AttAchDto">
+    <select id="getAttachById" resultType="cn.luischen.dto.AttachDto">
         SELECT
         <trim suffix="" suffixOverrides=",">
             <include refid="BASE_COLUMN"/>
@@ -92,7 +54,7 @@
     </select>
 
     <!-- 查找所有的附件 -->
-    <select id="getAtts" resultType="cn.luischen.dto.AttAchDto">
+    <select id="getAtts" resultType="cn.luischen.dto.AttachDto">
         SELECT
         <trim suffix="" suffixOverrides=",">
             <include refid="BASE_COLUMN"/>
@@ -103,13 +65,6 @@
         LEFT JOIN <include refid="TABLE_USER"/> AS u
         ON aa.author_id = u.uid
         ORDER BY aa.created DESC
-    </select>
-
-    <!-- 查找附件的数量 -->
-    <select id="getAttsCount" resultType="java.lang.Long">
-        SELECT count(*)
-        FROM
-        <include refid="BASE_TABLE"/>
     </select>
 
 

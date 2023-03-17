@@ -11,6 +11,7 @@ import cn.luischen.service.content.ContentService;
 import cn.luischen.utils.DateKit;
 import cn.luischen.utils.TaleUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,38 +58,38 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @CacheEvict(value={"commentCache","siteCache"},allEntries=true)
-    public void addComment(Comment comments) {
+    public void addComment(Comment comment) {
         String msg = null;
-        if (null == comments) {
+        if (null == comment) {
             msg = "评论对象为空";
         }
-        if(comments != null) {
-            if (StringUtils.isBlank(comments.getAuthor())) {
-                comments.setAuthor("热心网友");
+        if(comment != null) {
+            if (StringUtils.isBlank(comment.getAuthor())) {
+                comment.setAuthor("热心网友");
             }
-            if (StringUtils.isNotBlank(comments.getMail()) && !TaleUtils.isEmail(comments.getMail())) {
+            if (StringUtils.isNotBlank(comment.getMail()) && !TaleUtils.isEmail(comment.getMail())) {
                 msg = "请输入正确的邮箱格式";
             }
-            if (StringUtils.isBlank(comments.getContent())) {
+            if (StringUtils.isBlank(comment.getContent())) {
                 msg = "评论内容不能为空";
             }
-            if (comments.getContent().length() < 5 || comments.getContent().length() > 2000) {
+            if (comment.getContent().length() < 5 || comment.getContent().length() > 2000) {
                 msg = "评论字数在5-2000个字符";
             }
-            if (null == comments.getCid()) {
+            if (null == comment.getCid()) {
                 msg = "评论文章不能为空";
             }
             if (msg != null) {
                 throw BusinessException.withErrorCode(msg);
             }
-            Content article = contentService.getArticleById(comments.getCid());
+            Content article = contentService.getArticleById(comment.getCid());
             if (null == article) {
                 throw BusinessException.withErrorCode("该文章不存在");
             }
-            comments.setOwnerId(article.getAuthorId());
-            comments.setStatus(STATUS_MAP.get(STATUS_BLANK));
-            comments.setCreated(DateKit.getCurrentUnixTime());
-            commentDao.addComment(comments);
+            comment.setOwnerId(article.getAuthorId());
+            comment.setStatus(STATUS_MAP.get(STATUS_BLANK));
+            comment.setCreated(DateKit.getCurrentUnixTime());
+            commentDao.insert(comment);
 
             Content temp = new Content();
             temp.setCid(article.getCid());
@@ -113,27 +114,29 @@ public class CommentServiceImpl implements CommentService {
         //查找当前评论是否有子评论
         CommentCond commentCond = new CommentCond();
         commentCond.setParent(coid);
-        Comment comment = commentDao.getCommentById(coid);
-        List<Comment> childComments = commentDao.getCommentsByCond(commentCond);
+        Comment comment = commentDao.selectById(coid);
+
+        List<Comment> childComments = commentDao.selectList(getQueryWrapperByCond(commentCond));
         Integer count = 0;
+
         //删除子评论
         if (null != childComments && childComments.size() > 0){
             for (Comment childComment : childComments) {
-                commentDao.deleteComment(childComment.getCoid());
+                commentDao.deleteById(childComment.getCoid());
                 count++;
             }
         }
         //删除当前评论
-        commentDao.deleteComment(coid);
+        commentDao.deleteById(coid);
         count++;
 
         //更新当前文章的评论数
-        Content contentDomain = contentService.getArticleById(comment.getCid());
-        if (null != contentDomain
-                && null != contentDomain.getCommentsNum()
-                && contentDomain.getCommentsNum() != 0){
-            contentDomain.setCommentsNum(contentDomain.getCommentsNum() - count);
-            contentService.updateContentByCid(contentDomain);
+        Content content = contentService.getArticleById(comment.getCid());
+        if (null != content
+                && null != content.getCommentsNum()
+                && content.getCommentsNum() != 0){
+            content.setCommentsNum(content.getCommentsNum() - count);
+            contentService.updateContentByCid(content);
         }
     }
 
@@ -143,7 +146,11 @@ public class CommentServiceImpl implements CommentService {
         if (null == coid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        commentDao.updateCommentStatus(coid, status);
+        Comment comment = Comment.builder()
+                .coid(coid)
+                .status(status)
+                .build();
+        commentDao.updateById(comment);
     }
 
     @Override
@@ -153,7 +160,7 @@ public class CommentServiceImpl implements CommentService {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
 
-        return commentDao.getCommentById(coid);
+        return commentDao.selectById(coid);
     }
 
     @Override
@@ -162,7 +169,13 @@ public class CommentServiceImpl implements CommentService {
         if (null == cid) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        return commentDao.getCommentsByCId(cid);
+
+        LambdaQueryWrapper<Comment> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Comment::getCid, cid);
+        lqw.eq(Comment::getStatus, "approved");
+        lqw.orderByAsc(Comment::getCreated);
+
+        return commentDao.selectList(lqw);
     }
 
     @Override
@@ -172,6 +185,13 @@ public class CommentServiceImpl implements CommentService {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
         Page<Comment> page = new Page<>(pageNum, pageSize);
+        commentDao.selectPage(page, getQueryWrapperByCond(commentCond));
+
+        return page;
+    }
+
+    private LambdaQueryWrapper<Comment> getQueryWrapperByCond(CommentCond commentCond) {
+
         LambdaQueryWrapper<Comment> lqw = new LambdaQueryWrapper<>();
         lqw.eq(StringUtils.isNotEmpty(commentCond.getStatus()), Comment::getStatus, commentCond.getStatus());
         lqw.ge(commentCond.getStartTime() != null, Comment::getCreated, commentCond.getStartTime());
@@ -179,8 +199,6 @@ public class CommentServiceImpl implements CommentService {
         lqw.eq(commentCond.getParent() != null, Comment::getParent, commentCond.getParent());
         lqw.orderByAsc(Comment::getCreated);
 
-        commentDao.selectPage(page, lqw);
-
-        return page;
+        return lqw;
     }
 }

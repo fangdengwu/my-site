@@ -1,17 +1,19 @@
 package cn.luischen.service.attach.impl;
 
 import cn.luischen.constant.ErrorConstant;
-import cn.luischen.dao.AttAchDao;
-import cn.luischen.dto.AttAchDto;
+import cn.luischen.dao.AttachDao;
+import cn.luischen.dto.AttachDto;
 import cn.luischen.exception.BusinessException;
-import cn.luischen.model.AttAch;
-import cn.luischen.service.attach.AttAchService;
+import cn.luischen.model.Attach;
+import cn.luischen.service.attach.AttachService;
+import cn.luischen.utils.DateKit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,65 +21,67 @@ import java.util.List;
  * Created by winterchen on 2018/4/29.
  */
 @Service
-public class AttAchServiceImpl implements AttAchService {
+public class AttachServiceImpl implements AttachService {
 
     @Autowired
-    private AttAchDao attAchDao;
+    private AttachDao attachDao;
 
     @Override
     @CacheEvict(value={"attCaches","attCache"},allEntries=true,beforeInvocation=true)
-    public void addAttAch(AttAch attAchDomain) {
-        if (null == attAchDomain) {
+    public void addAttach(Attach attach) {
+        if (null == attach) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        attAchDao.addAttAch(attAchDomain);
+        attach.setCreated(DateKit.getCurrentUnixTime());
+        attachDao.insert(attach);
 
     }
 
     @Override
     @CacheEvict(value={"attCaches","attCache"},allEntries=true,beforeInvocation=true)
-    public void batchAddAttAch(List<AttAch> list) {
+    public void batchAddAttach(List<Attach> list) {
         if (null == list || list.size() == 0) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        attAchDao.batchAddAttAch(list);
+        attachDao.batchAddAttach(list);
 
     }
 
     @Override
     @CacheEvict(value={"attCaches","attCache"},allEntries=true,beforeInvocation=true)
-    public void deleteAttAch(Integer id) {
+    public void deleteAttach(Integer id) {
         if (null == id) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        attAchDao.deleteAttAch(id);
+        attachDao.deleteById(id);
 
     }
 
     @Override
     @CacheEvict(value={"attCaches","attCache"},allEntries=true,beforeInvocation=true)
-    public void updateAttAch(AttAch attAchDomain) {
-        if (null == attAchDomain || null == attAchDomain.getId()) {
+    public void updateAttach(Attach attach) {
+        if (null == attach || null == attach.getId()) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        attAchDao.updateAttAch(attAchDomain);
+        attach.setCreated(DateKit.getCurrentUnixTime());
+        attachDao.updateById(attach);
 
     }
 
     @Override
-    @Cacheable(value = "attCache", key = "'attAchById' + #p0")
-    public AttAchDto getAttAchById(Integer id) {
+    @Cacheable(value = "attCache", key = "'attachById' + #p0")
+    public AttachDto getAttachById(Integer id) {
         if (null == id) {
             throw BusinessException.withErrorCode(ErrorConstant.Common.PARAM_IS_EMPTY);
         }
-        return attAchDao.getAttAchById(id);
+        return attachDao.getAttachById(id);
     }
 
     @Override
     @Cacheable(value = "attCaches", key = "'atts' + #p0")
-    public Page<AttAchDto> getAtts(int pageNum, int pageSize) {
-        Page<AttAchDto> page = new Page<>(pageNum, pageSize);
-        List<AttAchDto> atts = attAchDao.getAtts();
+    public Page<AttachDto> getAtts(int pageNum, int pageSize) {
+        Page<AttachDto> page = new Page<>(pageNum, pageSize);
+        List<AttachDto> atts = attachDao.getAtts();
         page.setRecords(atts);
         return page;
     }

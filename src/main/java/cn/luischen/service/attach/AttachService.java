@@ -1,7 +1,7 @@
 package cn.luischen.service.attach;
 
-import cn.luischen.dto.AttAchDto;
-import cn.luischen.model.AttAch;
+import cn.luischen.dto.AttachDto;
+import cn.luischen.model.Attach;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
@@ -10,46 +10,46 @@ import java.util.List;
  * 附件服务层
  * Created by winterchen on 2018/4/29.
  */
-public interface AttAchService {
+public interface AttachService {
 
     /**
      * 添加单个附件信息
-     * @param attAchDomain
+     * @param attachDomain
      * @return
      */
-    void addAttAch(AttAch attAchDomain);
+    void addAttach(Attach attachDomain);
 
     /**
      * 批量添加附件信息
      * @param list
      * @return
      */
-    void batchAddAttAch(List<AttAch> list);
+    void batchAddAttach(List<Attach> list);
 
     /**
      * 根据主键编号删除附件信息
      * @param id
      * @return
      */
-    void deleteAttAch(Integer id);
+    void deleteAttach(Integer id);
 
     /**
      * 更新附件信息
-     * @param attAchDomain
+     * @param attachDomain
      * @return
      */
-    void updateAttAch(AttAch attAchDomain);
+    void updateAttach(Attach attachDomain);
 
     /**
      * 根据主键获取附件信息
      * @param id
      * @return
      */
-    AttAchDto getAttAchById(Integer id);
+    AttachDto getAttachById(Integer id);
 
     /**
      * 获取所有的附件信息
      * @return
      */
-    Page<AttAchDto> getAtts(int pageNum, int pageSize);
+    Page<AttachDto> getAtts(int pageNum, int pageSize);
 }

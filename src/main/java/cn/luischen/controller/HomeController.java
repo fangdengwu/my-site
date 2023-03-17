@@ -370,16 +370,17 @@ public class HomeController extends BaseController{
         author = EmojiParser.parseToAliases(author);
         text = EmojiParser.parseToAliases(text);
 
-        Comment comments = new Comment();
-        comments.setAuthor(author);
-        comments.setCid(cid);
-        comments.setIp(request.getRemoteAddr());
-        comments.setUrl(url);
-        comments.setContent(text);
-        comments.setMail(mail);
-        comments.setParent(coid);
+        Comment comment = Comment.builder()
+                .author(author)
+                .cid(cid)
+                .ip(request.getRemoteAddr())
+                .url(url)
+                .content(text)
+                .mail(mail)
+                .parent(coid)
+                .build();
         try {
-            commentService.addComment(comments);
+            commentService.addComment(comment);
             cookie("tale_remember_author", URLEncoder.encode(author, "UTF-8"), 7 * 24 * 60 * 60, response);
             cookie("tale_remember_mail", URLEncoder.encode(mail, "UTF-8"), 7 * 24 * 60 * 60, response);
             if (StringUtils.isNotBlank(url)) {

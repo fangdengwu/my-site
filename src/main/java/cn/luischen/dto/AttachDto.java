@@ -1,17 +1,14 @@
-package cn.luischen.model;
+package cn.luischen.dto;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
- * 网站图片文件相关
  * Created by winterchen on 2018/4/29.
  */
 @Data
-public class AttAch {
+public class AttachDto extends BaseDto{
 
     /** 主键编号 */
-    @TableId(value = "id")
     private Integer id;
     /** 文件名称 */
     private String fname;
@@ -23,4 +20,5 @@ public class AttAch {
     private Integer authorId;
     /** 创建的时间戳 */
     private Integer created;
+
 }
